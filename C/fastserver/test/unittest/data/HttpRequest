@@ -1,0 +1,7 @@
+GET / HTTP/1.0
+User-Agent: Mozilla/4.0 (compatible; MSIE 6.0;
+Host: www.baidu.com
+
+POST_DATA_BEGIN
+
+POST_DATA_END

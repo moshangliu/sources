@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<items width="500" text-align="center">
+<item type="settings" position="label-right" width="500" labelWidth="100" inputWidth="120"/>
+	<item type="fieldset" name="data" width="1000" >
+			<item type="button" name="add" value="添加"/>
+			<item type="newcolumn"/>
+			<item type="button" name="modify" value="修改"/>
+			<item type="newcolumn"/>
+			<item type="button" name="delete" value="删除"/>
+</item> 
+</items>

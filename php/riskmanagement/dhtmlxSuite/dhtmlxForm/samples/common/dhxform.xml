@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<items>
+	<item type="settings" position="label-left" labelWidth="100" inputWidth="120"/>
+	<item type="fieldset" name="data" inputWidth="auto" label="Welcome">
+		<item type="radio" name="type" labelWidth="auto" position="label-right" checked="true" label="Already have account">
+			<item type="input" value="p_rossi" label="Login"/>
+			<item type="password" value="123" label="Password"/>
+			<item type="checkbox" checked="true" label="Remember me"/>
+		</item>
+
+		<item type="button" value="Proceed"/>
+	</item>
+</items>

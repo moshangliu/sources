@@ -1,0 +1,25 @@
+﻿<?xml version="1.0"?>
+
+<menu>
+	<item id="sysmanage" text="系统管理">
+		<item id="usermanage" text="用户管理" img="new.gif" imgdis="new_dis.gif"/>
+		<item id="other" text="其他" img="open.gif" imgdis="open_dis.gif"/>
+	</item>
+	<item id="riskmanage" text="风险记录">
+		<item id="riskadd" text="风险添加" img="undo.gif" imgdis="undo_dis.gif"/>
+		<item id="riskedit" text="风险编辑1" img="redo.gif" imgdis="redo_dis.gif"/>
+	</item>
+	<item id="statistics" text="统计分析">
+		<item id="risksearch" text="风险查询" img="about.gif" imgdis="about_dis.gif"/>
+		<item id="analysis" text="统计分析" img="help.gif" imgdis="help_dis.gif"/>
+	</item>
+	<item id="databasemanage" text="数据库管理">
+		<item id="export" text="数据库导出" img="about.gif" imgdis="about_dis.gif"/>
+		<item id="import" text="数据库导入" img="help.gif" imgdis="help_dis.gif"/>
+	</item>
+	<item id="help" text="帮助">
+		<item id="about" text="关于" img="about.gif" imgdis="about_dis.gif"/>
+		<item id="needhelp" text="帮助" img="help.gif" imgdis="help_dis.gif"/>
+	</item>
+	<item id="exit" text="退出"></item>
+</menu>

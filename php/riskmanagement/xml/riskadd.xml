@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<items width="500" align="center">
+	<item type="settings" position="label-left" width="1000" labelWidth="100" inputWidth="120"/>
+	<item type="fieldset" name="data" width="1000"  label="风险源信息添加">
+			<item type="select" name="risktype" label="风险类型">
+				<option value="natural" label="自然灾害"/>
+				<option value="disaster" label="事故灾难"/>
+				<option value="healthy" label="公共卫生事件"/>
+				<option value="user" label="社会安全事件"/>
+			</item>
+			<item type="input" name="riskname" value="东四地铁站火灾风险" label="控制点名称："/>
+			<item type="password" name="address" value="北京市东城区东四" label="地址："/>
+			<item type="button" name="loginButton" value="添加"/>
+			<item type="button" name="loginButton" value="重置"/>
+	</item>
+</items>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rows>
+    <head>
+        <column width="50" type="dyn" align="right" sort="str">Sales</column>
+        <column width="150" type="ed" align="left" sort="str">Book Title</column>
+        <column width="100" type="ed" align="left" sort="str">Author</column>
+        <column width="80" type="price" align="right" sort="str">Price</column>
+        <column width="80" type="ch" align="center" sort="str">In Store</column>
+        <column width="80" type="co" align="left" sort="str">Shipping
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">10</option>
+            <option value="5">20</option>
+            <option value="6">30</option>
+        </column>
+        <column width="80" type="ra" align="center" sort="str">Bestseller</column>
+        <column width="200" type="ro" align="center" sort="str">Date of Publication</column>
+        <settings>
+            <colwidth>px</colwidth>
+        </settings>
+    </head>
+</rows>

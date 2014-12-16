@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<items width="500" align="center">
+	<item type="settings" position="label-left" width="500" labelWidth="100" inputWidth="120"/>
+	<item type="fieldset" name="data" width="300"  label="欢迎登陆风险源管理系统">
+			<item type="select" name="department" label="部门">
+				<option value="admin" label="管理员"/>
+				<option value="gov" label="政府用户"/>
+				<option value="com" label="企业用户"/>
+				<option value="user" label="一般用户"/>
+			</item>
+			<item type="input" name="username" value="admin" label="用户名："/>
+			<item type="password" name="password" value="admin" label="密码："/>
+			<item type="button" name="loginButton" value="登陆"/>
+	</item>
+</items>
