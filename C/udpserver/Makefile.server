@@ -1,7 +1,7 @@
 include ../Makefile.d
 
 server: *.o
-	@$(CC) $(CPPFLAGS) -o $@ *.o $(INCLUDES)
+	@$(CC) $(CC_COMPILE_LINE) -o $@ *.o $(INCLUDES)
 	ar -rs ./lib/lib$@.a *.o
 	rm *.o
 	rm Makefile.server
