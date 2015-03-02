@@ -5,22 +5,25 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netdb.h>
 #include <errno.h>
 
-#include "ClientConn.h"
 #include "ListenThread.h"
-#include "SafeQueueInstance.h"
 
 using namespace std;
 
 typedef struct sockaddr sockaddr_t;
 
-ListenThread::ListenThread(uint32 port)
-    : _port(port)
-{ }
+ListenThread::ListenThread(uint32 port) : _port(port) {
+    listenfd = 0;
+    if ((listenfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        cerr << "Failed to create listen socket." << endl;
+        exit(2);
+    }
+}
 
-struct sockaddr_in* ListenThread::GetSvrAddr()
-{
+struct sockaddr_in* ListenThread::GetSvrAddr() {
     struct sockaddr_in* svrAddr = new sockaddr_in();
     memset(svrAddr, 0, sizeof(struct sockaddr_in));
     svrAddr->sin_family = AF_INET;
@@ -30,67 +33,45 @@ struct sockaddr_in* ListenThread::GetSvrAddr()
     return svrAddr;
 }
 
-void ListenThread::Bind(int listenfd)
-{
+void ListenThread::Bind(int listenfd) {
     struct sockaddr_in* svrAddr = GetSvrAddr();
-    if (bind(listenfd, (struct sockaddr*)svrAddr, sizeof(struct sockaddr_in)) < 0)
-    {
+    if (bind(listenfd, (struct sockaddr*)svrAddr, sizeof(struct sockaddr_in)) < 0){
         cerr << "Failed to bind port [" << _port << "]" << endl;
         exit(3);
     }
 }
 
-void ListenThread::Listen(int listenfd)
-{
-    if (listen(listenfd, 5) < 0)
-    {
-        cerr << "Failed to listen port [" << _port << "]" << endl;
-        exit(4);
-    }
-}
+void ListenThread::Accept(int listenfd) {
+    while (true) {
+        const int BUF_LEN = 2048;
+        char* buf = new char[BUF_LEN];
+        memset(buf, 0, BUF_LEN);
 
-void ListenThread::Accept(int listenfd)
-{
-    while (true)
-    {
-        sockaddr_t* clientAddr = new sockaddr_t();
-        memset(clientAddr, 0, sizeof(sockaddr_t));
-
-        uint32 addrLen = sizeof(sockaddr_t);
-        int connfd = 0;
-        if ((connfd = accept(listenfd, clientAddr, &addrLen)) < 0)
-        {
-            cerr << "Failed to accept a client connection. errno = [" << errno << "]" << endl;
-            delete clientAddr;
-
+        struct sockaddr_in clientAddr;
+        socklen_t addrLen = sizeof(clientAddr);
+        int n = recvfrom(listenfd, buf, BUF_LEN, 0, (struct sockaddr*)&clientAddr, &addrLen);
+        if (n <= 0) {
+            cerr << "Failed to recv data";
+            delete [] buf;
             continue;
         }
 
-        ClientConn* conn = new ClientConn(connfd,
-            GetIP((struct sockaddr_in*)clientAddr),
-            GetPort((struct sockaddr_in*)clientAddr));
-        SafeQueueInstance::Instance()->Push(conn);
-
-        delete clientAddr;
+        string ip = string(inet_ntoa(clientAddr.sin_addr));
+        short port = ntohs(clientAddr.sin_port);
+        cout << "Recv, From:" << ip << "-" << port
+             << ", Data:" << string(buf) << endl;
+        sendto(listenfd, buf, n, 0, (struct sockaddr*)&clientAddr, sizeof(sockaddr_in));
+        delete [] buf;
     }
 }
 
-void* ListenThread::Process()
-{
-    if (_port < 1024 && _port != 80)
-    {
-        cerr << "You should bind port > 1024 or 80" << endl;
+void* ListenThread::Process() {
+    if (_port < 0) {
+        cerr << "You should bind port > 0" << endl;
         exit(1);
-    }
-    int listenfd = 0;
-    if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-        cerr << "Failed to create listen socket." << endl;
-        exit(2);
     }
 
     Bind(listenfd);
-    Listen(listenfd);
     Accept(listenfd);
 
     return NULL;

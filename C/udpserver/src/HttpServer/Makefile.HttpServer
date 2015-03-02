@@ -1,3 +1,0 @@
-include ../../Makefile.d
-server: HttpServer.o HttpRequest.o HttpResponse.o \
-    FileTypes.o ClientConn.o SafeQueueInstance.o

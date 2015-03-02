@@ -6,7 +6,7 @@ OUTDIR=output
 CPPFLAGS+=-g -O3 -Wall -pipe -D_REENTRANT -pthread -DVERSION=\""$(version)"\" -DBUILD_DATE=\""$(builddate)"\"
 CC= g++
 
-MODULES = HttpServer Thread Common ConfManager
+MODULES = Thread Common Main UDP
 INCLUDEDIR=../../include/
 SRCDIR = src
 INCLUDES=-I$(INCLUDEDIR)

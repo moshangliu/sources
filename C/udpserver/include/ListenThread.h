@@ -25,9 +25,9 @@ class ListenThread : public Thread
 
         uint32 _port;
 
-        void Bind(int listenfd);
+        int listenfd;
 
-        void Listen(int listenfd);
+        void Bind(int listenfd);
 
         void Accept(int listenfd);
 

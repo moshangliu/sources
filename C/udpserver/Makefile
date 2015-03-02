@@ -3,8 +3,7 @@ include Makefile.d
 all: server
 
 server: prepare $(MODULES)
-	@$(MAKE) -f Makefile.$@ -C ./output/
-	@cp ./conf/server.conf ./output/conf -v
+	@$(MAKE) -f Makefile.$@ -C ./output/	
 	@mv ./output/$@ ./output/bin -v
 
 prepare:
