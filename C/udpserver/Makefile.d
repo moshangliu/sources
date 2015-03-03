@@ -3,7 +3,7 @@ builddate=$(shell date)
 
 OUTDIR=output
 
-CPPFLAGS+=-g -O3 -Wall -pipe -D_REENTRANT -DVERSION=\""$(version)"\" -DBUILD_DATE=\""$(builddate)"\"
+CPPFLAGS+=-g -O3 -std=c++11 -Wall -pipe -D_REENTRANT -DVERSION=\""$(version)"\" -DBUILD_DATE=\""$(builddate)"\"
 #CC= g++
 CC=/opt/soft/tcpsvr/gcc-4.8.1/bin/g++
 
