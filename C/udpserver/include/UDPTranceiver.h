@@ -8,7 +8,6 @@ class UDPTranceiver {
 private:
     int _port;
     Thread* listenThread;
-    log4cplus::Logger _logger;
 public:
     UDPTranceiver(int port);
     ~UDPTranceiver();

@@ -1,23 +1,18 @@
 #include "Common.h"
 #include "UDPTranceiver.h"
 #include "ListenThread.h"
+#include "LoggerWrapper.h"
 
 #include <string>
 #include <iostream>
 
 #include "log4cplus/loggingmacros.h"
-#include "log4cplus/consoleappender.h"
-#include "log4cplus/helpers/pointer.h"
-#include "log4cplus/layout.h"
-#include <log4cplus/configurator.h>
 
 using namespace std;
 using namespace log4cplus;
-using namespace log4cplus::helpers;
 
 UDPTranceiver::UDPTranceiver(int port) : _port(port) {
-    listenThread = new ListenThread(port);
-
+    /*
     std::auto_ptr<Layout> layout = std::auto_ptr<Layout>(new PatternLayout("%d{%Y-%m-%d %H:%M:%S} %p - %m [%l/pid:%t]%n"));
 
     SharedAppenderPtr appender(new ConsoleAppender());
@@ -27,18 +22,20 @@ UDPTranceiver::UDPTranceiver(int port) : _port(port) {
     _logger = Logger::getInstance("UDPTranceiver");
     _logger.addAppender(appender);
     _logger.setLogLevel (DEBUG_LOG_LEVEL);
+*/
+    listenThread = new ListenThread(port);
 }
 
 UDPTranceiver::~UDPTranceiver() {
     delete listenThread;
 }
 
-void UDPTranceiver::SetLogger(Logger logger) {
-    _logger = logger;
+void UDPTranceiver::SetLogger(log4cplus::Logger logger) {
+    LoggerWrapper::Instance()->Logger(logger);
 }
 
 void UDPTranceiver::Run() {
-    LOG4CPLUS_DEBUG(_logger, "LOG4CPLUS, UDPTranceiver started");
+    LOG4CPLUS_DEBUG(LoggerWrapper::Instance()->Logger(), "LOG4CPLUS, UDPTranceiver started");
     listenThread->Run();
 }
 

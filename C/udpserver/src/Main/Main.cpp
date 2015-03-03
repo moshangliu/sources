@@ -8,6 +8,5 @@ int main() {
     tranceiver.Run();
     tranceiver.Join();
 
-    cout << "UDPTranceiver stopped" << endl;
     return 0;
 }

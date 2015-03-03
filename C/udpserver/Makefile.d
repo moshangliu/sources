@@ -8,7 +8,7 @@ CPPFLAGS+=-g -O3 -Wall -pipe -D_REENTRANT -DVERSION=\""$(version)"\" -DBUILD_DAT
 CC=/opt/soft/tcpsvr/gcc-4.8.1/bin/g++
 
 SRCDIR = src
-MODULES = Thread Common Main UDP
+MODULES = Thread Common Main UDP Log
 
 INCLUDEDIR=../../include/
 
