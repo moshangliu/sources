@@ -1,2 +1,2 @@
 include ../../Makefile.d
-all: UDPTranceiver.o
+all: UDPTranceiver.o UDPFrameHelper.o

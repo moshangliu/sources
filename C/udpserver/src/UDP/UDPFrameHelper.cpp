@@ -2,20 +2,22 @@
 
 #include "UDPFrameHelper.h"
 
-static byte* UDPFrameHelper::serialize(UDPFrame* frame) {
+using namespace std;
+
+tuple<byte*, int32> UDPFrameHelper::serialize(UDPFrame* frame) {
     if (frame == NULL) {
-        return NULL;
+        return make_tuple((byte*)NULL, 0);
     }
 
     if (frame->version() != VERSION_0) {
-        return NULL;
+        return make_tuple((byte*)NULL, 0);
     }
 
     return serialize_0(frame);
 }
 
-static byte* UDPFrameHelper::serialize_0(UDPFrame* frame) {
-    const int32 BUF_LEN = UDP_FRAME_HEADER_LEN_FOR_VERSION_0 + frame->contentLength();
+tuple<byte*, int32> UDPFrameHelper::serialize_0(UDPFrame* frame) {
+    int32 BUF_LEN = UDP_FRAME_HEADER_LEN_FOR_VERSION_0 + frame->contentLength();
     byte* data = new byte[BUF_LEN];
     memset(data, 0, BUF_LEN);
 
@@ -36,7 +38,17 @@ static byte* UDPFrameHelper::serialize_0(UDPFrame* frame) {
     data[9] = get<1>(ts);
 
     memcpy(data + UDP_FRAME_HEADER_LEN_FOR_VERSION_0, frame->content(), frame->contentLength());
-    return data;
+    return make_tuple(data, BUF_LEN);
 }
 
+UDPFrame* UDPFrameHelper::unserialize(byte* data, int len) {
+    if (data == NULL || len < UDP_FRAME_HEADER_LEN_FOR_VERSION_0) {
+        return NULL;
+    }
 
+    return NULL;
+}
+
+UDPFrame* UDPFrameHelper::unserialize_0(byte* data, int len) {
+    return unserialize(data, len);
+}

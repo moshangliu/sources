@@ -7,10 +7,10 @@ INCLUDES=-I../../../include/ \
 	-I../../gtest/include \
 	-I/opt/soft/tcpsvr/log4cplus/include
 
-DEP_LIBS = /opt/soft/tcpsvr/gcc-4.8.1/lib64/libstdc++.a \
-	/opt/soft/tcpsvr/log4cplus/lib/liblog4cplus.a \
+DEP_LIBS = ../../../output/lib/libserver.a \
+	 /opt/soft/tcpsvr/gcc-4.8.1/lib64/libstdc++.a \
+	 /opt/soft/tcpsvr/log4cplus/lib/liblog4cplus.a \
 	../../gtest/lib/libgtest.a \
 	../../gtest/lib/libgtest_main.a \
-	../../../output/lib/libserver.a \
 	 -lpthread
 

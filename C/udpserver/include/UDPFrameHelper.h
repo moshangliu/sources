@@ -2,15 +2,16 @@
 #define UDP_FRAME_HELPER_H
 
 #include <tuple>
+#include "UDPFrame.h"
 
 class UDPFrameHelper {
 private:
-    static byte* serialize_0(UDPFrame* frame);
+    static std::tuple<byte*, int32> serialize_0(UDPFrame* frame);
+    static UDPFrame* unserialize_0(byte* data, int len);
 
 public:
-    static byte* serialize(UDPFrame* frame);
-
-    static UDPFrame* unserialize(byte* data);
+    static std::tuple<byte*, int32> serialize(UDPFrame* frame);
+    static UDPFrame* unserialize(byte* data, int len);
 };
 
 #endif
