@@ -152,7 +152,7 @@ int32 toInt32(byte b1, byte b2, byte b3, byte b4) {
     return result;
 }
 
-std::tuple<byte, byte> int16To4Bytes(int16 d) {
+std::tuple<byte, byte> int16To2Bytes(int16 d) {
     const byte b1 = (d >> 8) & 0x000000FF;
     const byte b2 = (d) & 0x000000FF;
 

@@ -90,7 +90,7 @@ std::tuple<byte, byte, byte, byte> int32To4Bytes(int32 d);
 
 int32 toInt32(byte b1, byte b2, byte b3, byte b4);
 
-std::tuple<byte, byte> int16To4Bytes(int16 d);
+std::tuple<byte, byte> int16To2Bytes(int16 d);
 
 int16 toInt16(byte b1, byte b2);
 #endif
