@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <tuple>
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -16,6 +17,11 @@ typedef short int16;
 typedef unsigned long ulong;
 typedef unsigned char uchar;
 typedef unsigned char byte;
+
+extern const int UDP_FRAME_HEADER_LEN_FOR_VERSION_0;
+extern const int UDP_ACK_TYPE;
+extern const int UDP_PACKET_TYPE;
+extern const int UDP_UNKNOWN_TYPE;
 
 /**
  * @brief: split [str] with [delim] and store in [parts]
@@ -80,4 +86,11 @@ uint16 port(struct sockaddr_in* addr);
  **/
 std::string toString(int value, int maxLen = 12);
 
+std::tuple<byte, byte, byte, byte> int32To4Bytes(int32 d);
+
+int32 toInt32(byte b1, byte b2, byte b3, byte b4);
+
+std::tuple<byte, byte> int16To4Bytes(int16 d);
+
+int16 toInt16(byte b1, byte b2);
 #endif

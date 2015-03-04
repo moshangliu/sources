@@ -10,7 +10,10 @@ using namespace std;
 
 const std::string EMPTY = "";
 
-
+const int UDP_FRAME_HEADER_LEN_FOR_VERSION_0 = 10;
+const int UDP_ACK_TYPE = 0;
+const int UDP_PACKET_TYPE = 1;
+const int UDP_UNKNOWN_TYPE = 127;
 
 int split(string str, string delim, vector<string>& parts)
 {
@@ -115,3 +118,58 @@ string toString(int value, int maxLen)
     return string(str);
 }
 
+tuple<byte, byte, byte, byte> int32To4Bytes(int32 d) {
+    const byte b1 = (d >> 24) & 0x000000FF;
+    const byte b2 = (d >> 16) & 0x000000FF;
+    const byte b3 = (d >> 8) & 0x000000FF;
+    const byte b4 = (d) & 0x000000FF;
+
+    return make_tuple(b1, b2, b3, b4);
+}
+
+int32 toInt32(byte b1, byte b2, byte b3, byte b4) {
+    int result = 0;
+
+    int b = b1;
+    b = b & 0x000000FF;
+    result |= b;
+    result = result << 8;
+
+    b = b2;
+    b = b & 0x000000FF;
+    result |= b;
+    result = result << 8;
+
+    b = b3;
+    b = b & 0x000000FF;
+    result |= b;
+    result = result << 8;
+
+    b = b4;
+    b = b & 0x000000FF;
+    result |= b;
+
+    return result;
+}
+
+std::tuple<byte, byte> int16To4Bytes(int16 d) {
+    const byte b1 = (d >> 8) & 0x000000FF;
+    const byte b2 = (d) & 0x000000FF;
+
+    return make_tuple(b1, b2);
+}
+
+int16 toInt16(byte b1, byte b2) {
+    int result = 0;
+
+    int b = b1;
+    b = b & 0x000000FF;
+    result |= b;
+    result = result << 8;
+
+    b = b2;
+    b = b & 0x000000FF;
+    result |= b;
+
+    return result;
+}

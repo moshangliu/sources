@@ -3,13 +3,14 @@ include Makefile.d
 all: server
 
 server: prepare $(MODULES)
-	@$(MAKE) -f Makefile.$@ -C ./output/	
+	@$(MAKE) -f Makefile.$@ -C ./output/
 	@mv ./output/$@ ./output/bin -v
 
 prepare:
 	@if [ ! -d ./output ]; then mkdir ./output;	fi
 	@if [ ! -d ./output/bin ]; then mkdir ./output/bin;	fi
 	@if [ ! -d ./output/conf ]; then mkdir ./output/conf;	fi
+	@if [ ! -d ./output/include ]; then mkdir ./output/include;	fi
 	@if [ ! -d ./output/lib ]; then mkdir ./output/lib;	fi
 	@cp -v Makefile.server ./output/ -v
 
