@@ -13,7 +13,8 @@ MODULES = Thread Common Main UDP Log
 INCLUDEDIR=../../include/
 
 INCLUDE_DIRS=-I$(INCLUDEDIR) \
-	 -I/opt/soft/tcpsvr/log4cplus/include
+	 -I/opt/soft/tcpsvr/log4cplus/include \
+	 -I/opt/soft/tcpsvr/boost/include
 LIBS_DIR=/opt/soft/tcpsvr/gcc-4.8.1/lib64/libstdc++.a \
 	 /opt/soft/tcpsvr/log4cplus/lib/liblog4cplus.a\
 	 -lpthread

@@ -18,10 +18,9 @@ typedef unsigned long ulong;
 typedef unsigned char uchar;
 typedef unsigned char byte;
 
+extern const std::string EMPTY;
+extern const int VERSION_0;
 extern const int UDP_FRAME_HEADER_LEN_FOR_VERSION_0;
-extern const int UDP_ACK_TYPE;
-extern const int UDP_PACKET_TYPE;
-extern const int UDP_UNKNOWN_TYPE;
 
 /**
  * @brief: split [str] with [delim] and store in [parts]

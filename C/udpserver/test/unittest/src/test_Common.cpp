@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 }
 
 const string WHITE_SPACES = " \r\n";
-const string EMPTY = "";
+
 TEST(ltrim, test_ltrim) {
     ASSERT_EQ(ltrim("hello", WHITE_SPACES), "hello");
     ASSERT_EQ(ltrim(" hello", WHITE_SPACES), "hello");
@@ -69,5 +69,5 @@ TEST(toInt16, test_toInt16) {
     byte b1 = 0xFA;
     byte b2 = 0xFB;
 
-    ASSERT_EQ(0xFAFB, toInt16(b1, b2));
+    ASSERT_EQ((int16)0xFAFB, toInt16(b1, b2));
 }

@@ -8,12 +8,10 @@
 
 using namespace std;
 
-const std::string EMPTY = "";
+const int VERSION_0 = 0;
+const string EMPTY = "";
 
 const int UDP_FRAME_HEADER_LEN_FOR_VERSION_0 = 10;
-const int UDP_ACK_TYPE = 0;
-const int UDP_PACKET_TYPE = 1;
-const int UDP_UNKNOWN_TYPE = 127;
 
 int split(string str, string delim, vector<string>& parts)
 {
