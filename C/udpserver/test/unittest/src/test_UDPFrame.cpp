@@ -100,12 +100,40 @@ TEST(UDPFrame, test_serialize_ack) {
     ASSERT_EQ(0, toInt16(data[8], data[9]));
 }
 
+TEST(UDPFrame, test_unserialize_packet) {
+    const byte version = VERSION_0;
+    const int32 packetId = 1234;
+    const byte frameCount = 127;
+    const byte frameIndex = 126;
+    const int16 contentLen = 10;
+    byte* content = new byte[contentLen];
+    for (int32 i = 0; i < contentLen; i++) {
+        content[i] = i;
+    }
+
+    UDPFrame* frame = UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, contentLen, content);
+    tuple<byte*, int32> result = UDPFrameHelper::serialize(frame);
+    byte* data = get<0>(result);
+    int32 len = get<1>(result);
+
+    UDPFrame* frameNew = UDPFrameHelper::unserialize(data, len);
+    ASSERT_TRUE(NULL != frameNew);
+    ASSERT_EQ(frame->version(), frameNew->version());
+    ASSERT_EQ(frame->packetType(), frameNew->packetType());
+    ASSERT_EQ(frame->packetId(), frameNew->packetId());
+    ASSERT_EQ(frame->frameCount(), frameNew->frameCount());
+    ASSERT_EQ(frame->frameIndex(), frameNew->frameIndex());
+    ASSERT_EQ(frame->contentLength(), frameNew->contentLength());
+    ASSERT_TRUE(assertSame(frame->content(), frameNew->content(), contentLen));
+}
+
 bool assertSame(const byte* data1, const byte* data2, int32 len) {
     if (data1 == NULL && data2 == NULL) {
         return true;
     }
 
     for (int32 i = 0; i < len; i++) {
+//        cout <<"DIFF:" << (int)data1[i] << "," << (int)data2[i] <<endl;
         if (data1[i] != data2[i]) {
             return false;
         }

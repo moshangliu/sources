@@ -7,11 +7,11 @@
 class UDPFrameHelper {
 private:
     static std::tuple<byte*, int32> serialize_0(UDPFrame* frame);
-    static UDPFrame* unserialize_0(byte* data, int len);
+    static UDPFrame* unserialize_0(const byte* data, int len);
 
 public:
     static std::tuple<byte*, int32> serialize(UDPFrame* frame);
-    static UDPFrame* unserialize(byte* data, int len);
+    static UDPFrame* unserialize(const byte* data, int len);
 };
 
 #endif

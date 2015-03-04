@@ -37,18 +37,53 @@ tuple<byte*, int32> UDPFrameHelper::serialize_0(UDPFrame* frame) {
     data[8] = get<0>(ts);
     data[9] = get<1>(ts);
 
-    memcpy(data + UDP_FRAME_HEADER_LEN_FOR_VERSION_0, frame->content(), frame->contentLength());
+    if (frame->contentLength() > 0) {
+        memcpy(data + UDP_FRAME_HEADER_LEN_FOR_VERSION_0, frame->content(), frame->contentLength());
+    }
     return make_tuple(data, BUF_LEN);
 }
 
-UDPFrame* UDPFrameHelper::unserialize(byte* data, int len) {
+UDPFrame* UDPFrameHelper::unserialize(const byte* data, int len) {
     if (data == NULL || len < UDP_FRAME_HEADER_LEN_FOR_VERSION_0) {
         return NULL;
+    }
+
+    byte version = data[0];
+    if (version == VERSION_0) {
+        return unserialize_0(data, len);
     }
 
     return NULL;
 }
 
-UDPFrame* UDPFrameHelper::unserialize_0(byte* data, int len) {
-    return unserialize(data, len);
+UDPFrame* UDPFrameHelper::unserialize_0(const byte* data, int len) {
+    byte version = data[0];
+    if (version != VERSION_0) {
+        return NULL;
+    }
+
+    byte packetType = data[1];
+    if (packetType != UDPPacketType::Packet && packetType != UDPPacketType::Ack) {
+        return NULL;
+    }
+
+    int32 packetId = toInt32(data[2], data[3], data[4], data[5]);
+    byte frameCount = data[6];
+    byte frameIndex = data[7];
+    int16 contentLen = toInt16(data[8], data[9]);
+    if (len != contentLen + UDP_FRAME_HEADER_LEN_FOR_VERSION_0) {
+        return NULL;
+    }
+
+    if (packetType == UDPPacketType::Ack) {
+        return UDPFrame::buildAck(version, packetId, frameCount, frameIndex);
+    }
+
+    byte* content = NULL;
+    if (contentLen > 0) {
+        content = new byte[contentLen];
+        memcpy(content, data + UDP_FRAME_HEADER_LEN_FOR_VERSION_0, contentLen);
+    }
+
+    return UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, contentLen, content);
 }
