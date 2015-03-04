@@ -12,33 +12,22 @@ using namespace std;
 using namespace log4cplus;
 
 UDPTranceiver::UDPTranceiver(int port) : _port(port) {
-    /*
-    std::auto_ptr<Layout> layout = std::auto_ptr<Layout>(new PatternLayout("%d{%Y-%m-%d %H:%M:%S} %p - %m [%l/pid:%t]%n"));
-
-    SharedAppenderPtr appender(new ConsoleAppender());
-    appender->setName("myAppenderName");
-    appender->setLayout(layout);
-
-    _logger = Logger::getInstance("UDPTranceiver");
-    _logger.addAppender(appender);
-    _logger.setLogLevel (DEBUG_LOG_LEVEL);
-*/
-    listenThread = new ListenThread(port);
+    _listenThread = new ListenThread(port);
 }
 
 UDPTranceiver::~UDPTranceiver() {
-    delete listenThread;
+    delete _listenThread;
 }
 
-void UDPTranceiver::SetLogger(log4cplus::Logger logger) {
-    LoggerWrapper::Instance()->Logger(logger);
+void UDPTranceiver::logger(log4cplus::Logger logger) {
+    LoggerWrapper::instance()->logger(logger);
 }
 
-void UDPTranceiver::Run() {
-    LOG4CPLUS_DEBUG(LoggerWrapper::Instance()->Logger(), "LOG4CPLUS, UDPTranceiver started");
-    listenThread->Run();
+void UDPTranceiver::run() {
+    LOG4CPLUS_DEBUG(LoggerWrapper::instance()->logger(), "UDPTranceiver started");
+    _listenThread->run();
 }
 
-void UDPTranceiver::Join() {
-    listenThread->Join();
+void UDPTranceiver::join() {
+    _listenThread->join();
 }

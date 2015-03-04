@@ -5,8 +5,8 @@ using namespace std;
 
 int main() {
     UDPTranceiver tranceiver(11111);
-    tranceiver.Run();
-    tranceiver.Join();
+    tranceiver.run();
+    tranceiver.join();
 
     return 0;
 }

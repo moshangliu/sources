@@ -13,9 +13,9 @@ private:
     LoggerWrapper();
 
 public:
-    static LoggerWrapper* Instance();
-    void Logger(log4cplus::Logger logger);
-    log4cplus::Logger Logger();
+    static LoggerWrapper* instance();
+    void logger(log4cplus::Logger logger);
+    log4cplus::Logger logger();
 };
 
 #endif

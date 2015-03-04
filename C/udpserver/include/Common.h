@@ -27,7 +27,7 @@ typedef unsigned char byte;
  *      Split("part1|part2", "|", vector)
  *      => ["part1", "part2"]
  **/
-int Split(std::string str, std::string delim,
+int split(std::string str, std::string delim,
     std::vector<std::string>& parts);
 
 /**
@@ -38,7 +38,7 @@ int Split(std::string str, std::string delim,
  *      123 --> "123"
  *     -123 --> "-123"
  **/
-std::string IntToStr(int num);
+std::string intToStr(int num);
 
 /**
  * @brief: left trim
@@ -69,15 +69,15 @@ std::string trim(std::string str, std::string rmv);
  * @param [in] addr: struct sockaddr_in
  * @return: IP-string
  **/
-std::string GetIP(struct sockaddr_in* addr);
+std::string ip(struct sockaddr_in* addr);
 
-uint16 GetPort(struct sockaddr_in* addr);
+uint16 port(struct sockaddr_in* addr);
 
 /**
  * @brief: convert value to string
  * @param [in] value: integer
  * @param [in] maxLen: max int len
  **/
-std::string ToString(int value, int maxLen = 12);
+std::string toString(int value, int maxLen = 12);
 
 #endif

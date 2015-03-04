@@ -21,7 +21,7 @@ LoggerWrapper::LoggerWrapper() {
     _logger.setLogLevel (DEBUG_LOG_LEVEL);
 }
 
-LoggerWrapper* LoggerWrapper::Instance() {
+LoggerWrapper* LoggerWrapper::instance() {
     if (_instance == NULL) {
         pthread_mutex_lock(&_mutex);
         if (_instance == NULL) {
@@ -33,10 +33,10 @@ LoggerWrapper* LoggerWrapper::Instance() {
     return _instance;
 }
 
-void LoggerWrapper::Logger(log4cplus::Logger logger) {
+void LoggerWrapper::logger(log4cplus::Logger logger) {
     _logger = logger;
 }
 
-Logger LoggerWrapper::Logger() {
+Logger LoggerWrapper::logger() {
     return _logger;
 }

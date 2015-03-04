@@ -14,11 +14,11 @@ class SafeQueue
 
         ~SafeQueue();
 
-        void Push(T obj);
+        void push(T obj);
 
-        T Pop();
+        T pop();
 
-        uint32 Size();
+        uint32 size();
     private:
         std::queue<T> _container;
         uint32 _maxSize;
@@ -41,7 +41,7 @@ template <typename T> SafeQueue<T>::~SafeQueue()
     //TODO: Will destory _mutex / _not_empty_cond / _not_full_cond
 }
 
-template <typename T> void SafeQueue<T>::Push(T obj)
+template <typename T> void SafeQueue<T>::push(T obj)
 {
     pthread_mutex_lock(&_mutex);
 
@@ -56,7 +56,7 @@ template <typename T> void SafeQueue<T>::Push(T obj)
     pthread_mutex_unlock(&_mutex);
 }
 
-template <typename T> T SafeQueue<T>::Pop()
+template <typename T> T SafeQueue<T>::pop()
 {
     pthread_mutex_lock(&_mutex);
 
@@ -74,7 +74,7 @@ template <typename T> T SafeQueue<T>::Pop()
     return res;
 }
 
-template <typename T> uint32 SafeQueue<T>::Size()
+template <typename T> uint32 SafeQueue<T>::size()
 {
     pthread_mutex_lock(&_mutex);
     uint32 t_size = _container.size();

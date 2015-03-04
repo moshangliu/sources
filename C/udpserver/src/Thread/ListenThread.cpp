@@ -23,7 +23,7 @@ ListenThread::ListenThread(uint32 port) : _port(port) {
     }
 }
 
-struct sockaddr_in* ListenThread::GetSvrAddr() {
+struct sockaddr_in* ListenThread::getSvrAddr() {
     struct sockaddr_in* svrAddr = new sockaddr_in();
     memset(svrAddr, 0, sizeof(struct sockaddr_in));
     svrAddr->sin_family = AF_INET;
@@ -34,14 +34,14 @@ struct sockaddr_in* ListenThread::GetSvrAddr() {
 }
 
 void ListenThread::Bind(int listenfd) {
-    struct sockaddr_in* svrAddr = GetSvrAddr();
+    struct sockaddr_in* svrAddr = getSvrAddr();
     if (bind(listenfd, (struct sockaddr*)svrAddr, sizeof(struct sockaddr_in)) < 0){
         cerr << "Failed to bind port [" << _port << "]" << endl;
         exit(3);
     }
 }
 
-void ListenThread::Accept(int listenfd) {
+void ListenThread::accept(int listenfd) {
     while (true) {
         const int BUF_LEN = 2048;
         char* buf = new char[BUF_LEN];
@@ -65,14 +65,14 @@ void ListenThread::Accept(int listenfd) {
     }
 }
 
-void* ListenThread::Process() {
+void* ListenThread::process() {
     if (_port < 0) {
         cerr << "You should bind port > 0" << endl;
         exit(1);
     }
 
     Bind(listenfd);
-    Accept(listenfd);
+    accept(listenfd);
 
     return NULL;
 }

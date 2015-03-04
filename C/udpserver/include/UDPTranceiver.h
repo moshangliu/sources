@@ -7,15 +7,15 @@
 class UDPTranceiver {
 private:
     int _port;
-    Thread* listenThread;
+    Thread* _listenThread;
 public:
     UDPTranceiver(int port);
     ~UDPTranceiver();
 
-    void SetLogger(log4cplus::Logger logger);
+    void logger(log4cplus::Logger logger);
 
-    void Run();
-    void Join();
+    void run();
+    void join();
 };
 
 #endif

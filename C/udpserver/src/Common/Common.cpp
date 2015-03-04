@@ -12,7 +12,7 @@ const std::string EMPTY = "";
 
 
 
-int Split(string str, string delim, vector<string>& parts)
+int split(string str, string delim, vector<string>& parts)
 {
     if (delim.length() == 0)
     {
@@ -33,7 +33,7 @@ int Split(string str, string delim, vector<string>& parts)
     return 0;
 }
 
-string IntToStr(int num)
+string intToStr(int num)
 {
     const int MAX_LEN = 20;
     char buf[MAX_LEN];
@@ -80,7 +80,7 @@ string trim(string str, string rmv)
     return rtrim(ltrim(str, rmv), rmv);
 }
 
-string GetIP(struct sockaddr_in* addr)
+string ip(struct sockaddr_in* addr)
 {
     const int IP_STR_LEN = 32;
     char ipStr[IP_STR_LEN];
@@ -92,12 +92,12 @@ string GetIP(struct sockaddr_in* addr)
 
 }
 
-uint16 GetPort(struct sockaddr_in* addr)
+uint16 port(struct sockaddr_in* addr)
 {
     return ntohs(addr->sin_port);
 }
 
-string ToString(int value, int maxLen)
+string toString(int value, int maxLen)
 {
     int rt = 0;
     char str[255];

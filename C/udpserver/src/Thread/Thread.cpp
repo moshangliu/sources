@@ -3,17 +3,17 @@
 void* Thread::Func(void* obj)
 {
     Thread* th = (Thread*)obj;
-    return th->Process();
+    return th->process();
 }
 
-int Thread::Run()
+int Thread::run()
 {
-    int ret = pthread_create(&threadId, NULL, Thread::Func, this);
+    int ret = pthread_create(&_threadId, NULL, Thread::Func, this);
     return ret;
 }
 
-int Thread::Join()
+int Thread::join()
 {
-    int ret = pthread_join(threadId, NULL);
+    int ret = pthread_join(_threadId, NULL);
     return ret;
 }

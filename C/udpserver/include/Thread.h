@@ -8,12 +8,12 @@ class Thread
     public:
         Thread()
         {
-            threadId = 0;
+            _threadId = 0;
         }
 
         static void* Func(void* param);
 
-        virtual void* Process() = 0;
+        virtual void* process() = 0;
 
         virtual ~Thread() { }
 
@@ -21,18 +21,18 @@ class Thread
          * @brief Thread.Run()
          * @return: success 0, errno otherwise
          **/
-        int Run();
+        int run();
 
         /**
          * @brief Thread.Join()
          * @return: success 0, errno otherwise
          **/
-        int Join();
+        int join();
 
-        pthread_t GetThreadId() { return threadId; }
+        pthread_t threadId() { return _threadId; }
 
     private:
-        pthread_t threadId;
+        pthread_t _threadId;
 };
 
 

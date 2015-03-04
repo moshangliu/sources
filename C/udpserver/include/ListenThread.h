@@ -17,9 +17,9 @@ class ListenThread : public Thread
          * @param [in] port: service port
          * @return: server sockaddr
          **/
-        struct sockaddr_in* GetSvrAddr();
+        struct sockaddr_in* getSvrAddr();
 
-        virtual void* Process();
+        virtual void* process();
 
     private:
 
@@ -29,7 +29,7 @@ class ListenThread : public Thread
 
         void Bind(int listenfd);
 
-        void Accept(int listenfd);
+        void accept(int listenfd);
 
 };
 
