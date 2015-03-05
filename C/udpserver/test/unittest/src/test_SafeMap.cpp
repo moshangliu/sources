@@ -26,8 +26,13 @@ TEST(SafeMap, test_SafeMap) {
 
     data.put("K3", 3);
     ASSERT_EQ(3, data.size());
+    ASSERT_TRUE(data.has("K3"));
 
     ASSERT_EQ(1, data.get("K1"));
     ASSERT_EQ(2, data.get("K2"));
     ASSERT_EQ(3, data.get("K3"));
+
+    data.erase("K3");
+    ASSERT_EQ(2, data.size());
+    ASSERT_FALSE(data.has("K3"));
 }
