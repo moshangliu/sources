@@ -1,4 +1,5 @@
 #include "LoggerWrapper.h"
+#include "MutexLock.h"
 
 #include "log4cplus/consoleappender.h"
 #include "log4cplus/layout.h"
@@ -23,11 +24,10 @@ LoggerWrapper::LoggerWrapper() {
 
 LoggerWrapper* LoggerWrapper::instance() {
     if (_instance == NULL) {
-        pthread_mutex_lock(&_mutex);
+        MutexLock lock(&_mutex);
         if (_instance == NULL) {
             _instance = new LoggerWrapper();
         }
-        pthread_mutex_unlock(&_mutex);
     }
 
     return _instance;

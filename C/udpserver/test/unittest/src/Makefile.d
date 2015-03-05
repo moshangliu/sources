@@ -5,7 +5,8 @@ SRCDIR = src
 
 INCLUDES=-I../../../include/ \
 	-I../../gtest/include \
-	-I/opt/soft/tcpsvr/log4cplus/include
+	-I/opt/soft/tcpsvr/log4cplus/include \
+	-I/opt/soft/tcpsvr/boost/include
 
 DEP_LIBS = ../../../output/lib/libserver.a \
 	 /opt/soft/tcpsvr/gcc-4.8.1/lib64/libstdc++.a \

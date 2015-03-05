@@ -1,2 +1,2 @@
 include ../../Makefile.d
-server: Common.o
+server: Common.o MutexLock.o

@@ -5,6 +5,7 @@
 #include <pthread.h>
 
 #include "Common.h"
+#include "MutexLock.h"
 
 template <typename T>
 class SafeQueue
@@ -43,8 +44,7 @@ template <typename T> SafeQueue<T>::~SafeQueue()
 
 template <typename T> void SafeQueue<T>::push(T obj)
 {
-    pthread_mutex_lock(&_mutex);
-
+    MutexLock lock(&_mutex);
     while (_container.size() == _maxSize)
     {
         pthread_cond_wait(&_not_full_cond, &_mutex);
@@ -52,14 +52,11 @@ template <typename T> void SafeQueue<T>::push(T obj)
 
     _container.push(obj);
     pthread_cond_signal(&_not_empty_cond);
-
-    pthread_mutex_unlock(&_mutex);
 }
 
 template <typename T> T SafeQueue<T>::pop()
 {
-    pthread_mutex_lock(&_mutex);
-
+    MutexLock lock(&_mutex);
     while (_container.size() == 0)
     {
         pthread_cond_wait(&_not_empty_cond, &_mutex);
@@ -69,16 +66,13 @@ template <typename T> T SafeQueue<T>::pop()
     _container.pop();
     pthread_cond_signal(&_not_full_cond);
 
-    pthread_mutex_unlock(&_mutex);
-
     return res;
 }
 
 template <typename T> uint32 SafeQueue<T>::size()
 {
-    pthread_mutex_lock(&_mutex);
+    MutexLock lock(&_mutex);
     uint32 t_size = _container.size();
-    pthread_mutex_unlock(&_mutex);
 
     return t_size;
 }

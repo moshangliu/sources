@@ -3,6 +3,7 @@
 
 #include <map>
 #include <pthread.h>
+#include "MutexLock.h"
 
 template <class KType, class VType>
 class SafeMap {
@@ -16,38 +17,28 @@ public:
     }
 
     VType& get(const KType& key) {
-        pthread_mutex_lock(&_mutex);
-        VType& value = map[key];
-        pthread_mutex_unlock(&_mutex);
-
-        return value;
+        MutexLock lock(&_mutex);
+        return map[key];
     }
 
     bool has(const KType& key) {
-        pthread_mutex_lock(&_mutex);
-        bool has = map.find(key) != map.end();
-        pthread_mutex_unlock(&_mutex);
-
-        return has;
+        MutexLock lock(&_mutex);
+        return map.find(key) != map.end();
     }
 
     void put(const KType& key, const VType& value) {
-        pthread_mutex_lock(&_mutex);
+        MutexLock lock(&_mutex);
         map[key] = value;
-        pthread_mutex_unlock(&_mutex);
     }
 
     void erase(const KType& key) {
-        pthread_mutex_lock(&_mutex);
+        MutexLock lock(&_mutex);
         map.erase(key);
-        pthread_mutex_unlock(&_mutex);
     }
 
     size_t size() {
-        pthread_mutex_lock(&_mutex);
-        size_t size = map.size();
-        pthread_mutex_unlock(&_mutex);
-        return size;
+        MutexLock lock(&_mutex);
+        return map.size();
     }
 };
 
