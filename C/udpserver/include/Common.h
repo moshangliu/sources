@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <tuple>
+#include <atomic>
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -19,8 +20,12 @@ typedef unsigned char uchar;
 typedef unsigned char byte;
 
 extern const std::string EMPTY;
+
 extern const int VERSION_0;
 extern const int UDP_FRAME_HEADER_LEN_FOR_VERSION_0;
+extern const int UDP_FRAME_MAX_SIZE;
+extern const int UDP_FRAME_MAX_COUNT;
+extern const int UDP_PACKET_MAX_SIZE;
 
 /**
  * @brief: split [str] with [delim] and store in [parts]

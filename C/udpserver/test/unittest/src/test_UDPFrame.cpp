@@ -127,13 +127,112 @@ TEST(UDPFrame, test_unserialize_packet) {
     ASSERT_TRUE(assertSame(frame->content(), frameNew->content(), contentLen));
 }
 
+void test_segment(byte* data, int dataLen);
+
+TEST(UDPFrame, test_segment_null) {
+    test_segment(NULL, 0);
+}
+
+TEST(UDPFrame, test_segment_half_packet) {
+    int dataLen = UDP_FRAME_MAX_SIZE / 2;
+    byte* data = new byte[dataLen];
+    for (int i = 0; i < dataLen; i++) {
+        data[i] = i;
+    }
+    test_segment(data, dataLen);
+}
+
+TEST(UDPFrame, test_segment_one_packet) {
+    int dataLen = UDP_FRAME_MAX_SIZE;
+    byte* data = new byte[dataLen];
+    for (int i = 0; i < dataLen; i++) {
+        data[i] = i;
+    }
+    test_segment(data, dataLen);
+}
+
+TEST(UDPFrame, test_segment_one_half_packet) {
+    int dataLen = UDP_FRAME_MAX_SIZE * 3 / 2;
+    byte* data = new byte[dataLen];
+    for (int i = 0; i < dataLen; i++) {
+        data[i] = i;
+    }
+    test_segment(data, dataLen);
+}
+
+TEST(UDPFrame, test_segment_two_packet) {
+    int dataLen = UDP_FRAME_MAX_SIZE * 2;
+    byte* data = new byte[dataLen];
+    for (int i = 0; i < dataLen; i++) {
+        data[i] = i;
+    }
+    test_segment(data, dataLen);
+}
+
+TEST(UDPFrame, test_segment_max_packet_notfull) {
+    int dataLen = UDP_PACKET_MAX_SIZE - (UDP_FRAME_MAX_SIZE / 2);
+    byte* data = new byte[dataLen];
+    for (int i = 0; i < dataLen; i++) {
+        data[i] = i;
+    }
+    test_segment(data, dataLen);
+}
+
+TEST(UDPFrame, test_segment_max_packet_full) {
+    int dataLen = UDP_PACKET_MAX_SIZE;
+    byte* data = new byte[dataLen];
+    for (int i = 0; i < dataLen; i++) {
+        data[i] = i;
+    }
+    test_segment(data, dataLen);
+}
+
+TEST(UDPFrame, test_segment_over_max_packet) {
+    int dataLen = UDP_PACKET_MAX_SIZE + 1;
+    byte* data = new byte[dataLen];
+    for (int i = 0; i < dataLen; i++) {
+        data[i] = i;
+    }
+    test_segment(data, dataLen);
+}
+
+void test_segment(byte* data, int dataLen) {
+    vector<UDPFrame*>* frames = UDPFrameHelper::segment(data, dataLen);
+    if (data == NULL || dataLen <= 0 || dataLen > UDP_PACKET_MAX_SIZE) {
+        ASSERT_TRUE(frames == NULL);
+        return;
+    }
+    ASSERT_TRUE(frames != NULL);
+
+    int frameCount = dataLen / UDP_FRAME_MAX_SIZE;
+    if (dataLen % UDP_FRAME_MAX_SIZE > 0) {
+        frameCount ++;
+    }
+    ASSERT_TRUE(frameCount > 0);
+    ASSERT_EQ(frameCount, frames->size());
+
+    int packetId = frames->at(0)->packetId();
+    for (int i = 0; i < frameCount; i++) {
+        UDPFrame* frame = frames->at(i);
+        ASSERT_EQ(VERSION_0, frame->version());
+        ASSERT_EQ(UDPPacketType::Packet, frame->packetType());
+        ASSERT_EQ(packetId, frame->packetId());
+        ASSERT_EQ(frameCount, frame->frameCount());
+        ASSERT_EQ(i + 1, frame->frameIndex());
+
+        int contentLenExpected = i == frameCount - 1 ? dataLen - i*UDP_FRAME_MAX_SIZE : UDP_FRAME_MAX_SIZE;
+        ASSERT_EQ(contentLenExpected, frame->contentLength());
+
+        assertSame(data + i*UDP_FRAME_MAX_SIZE, frame->content(), frame->contentLength());
+    }
+}
+
 bool assertSame(const byte* data1, const byte* data2, int32 len) {
     if (data1 == NULL && data2 == NULL) {
         return true;
     }
 
     for (int32 i = 0; i < len; i++) {
-//        cout <<"DIFF:" << (int)data1[i] << "," << (int)data2[i] <<endl;
         if (data1[i] != data2[i]) {
             return false;
         }

@@ -35,9 +35,9 @@ public:
         delete[] _content;
     }
 
-    byte version() { return _version; }
+    byte version() const { return _version; }
 
-    UDPPacketType packetType() {
+    UDPPacketType packetType() const {
         if (_packetType == UDPPacketType::Ack) {
             return UDPPacketType::Ack;
         }
@@ -47,15 +47,15 @@ public:
         return UDPPacketType::UNKNOWN;
     }
 
-    int32 packetId() { return _packetId; }
+    int32 packetId() const { return _packetId; }
 
-    byte frameCount() { return _frameCount; }
+    byte frameCount() const { return _frameCount; }
 
-    byte frameIndex() { return _frameIndex; }
+    byte frameIndex() const { return _frameIndex; }
 
-    int16 contentLength() { return _contentLength; }
+    int16 contentLength() const { return _contentLength; }
 
-    const byte* const content() { return _content; }
+    const byte* const content() const { return _content; }
 
     static UDPFrame* buildPacket(byte version, int32 packetId, byte frameCount, byte frameIndex, int16 contentLength, byte* content) {
         return new UDPFrame(version, UDPPacketType::Packet, packetId, frameCount, frameIndex, contentLength, content);

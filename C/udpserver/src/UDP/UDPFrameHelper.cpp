@@ -1,10 +1,11 @@
 #include<cstring>
 
 #include "UDPFrameHelper.h"
+#include "UDPPacketIdCreator.h"
 
 using namespace std;
 
-tuple<byte*, int32> UDPFrameHelper::serialize(UDPFrame* frame) {
+tuple<byte*, int32> UDPFrameHelper::serialize(const UDPFrame* frame) {
     if (frame == NULL) {
         return make_tuple((byte*)NULL, 0);
     }
@@ -16,7 +17,7 @@ tuple<byte*, int32> UDPFrameHelper::serialize(UDPFrame* frame) {
     return serialize_0(frame);
 }
 
-tuple<byte*, int32> UDPFrameHelper::serialize_0(UDPFrame* frame) {
+tuple<byte*, int32> UDPFrameHelper::serialize_0(const UDPFrame* frame) {
     int32 BUF_LEN = UDP_FRAME_HEADER_LEN_FOR_VERSION_0 + frame->contentLength();
     byte* data = new byte[BUF_LEN];
     memset(data, 0, BUF_LEN);
@@ -86,4 +87,34 @@ UDPFrame* UDPFrameHelper::unserialize_0(const byte* data, int len) {
     }
 
     return UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, contentLen, content);
+}
+
+vector<UDPFrame*>* UDPFrameHelper::segment(const byte* data, int len) {
+
+    if (data == NULL || len <= 0 || len > UDP_PACKET_MAX_SIZE) {
+        return NULL;
+    }
+
+    int frameCount = len / UDP_FRAME_MAX_SIZE;
+    if (len % UDP_FRAME_MAX_SIZE > 0) {
+        frameCount++;
+    }
+
+    const int packetId = UDPPacketIdCreator::instance()->next();
+    vector<UDPFrame*>* frames = new vector<UDPFrame*>();
+    int idx = 0;
+    for (int i = 0; i < frameCount; i++) {
+        int frameContentLen = i == frameCount - 1 ? len - idx : UDP_FRAME_MAX_SIZE;
+        byte* frameContent = new byte[frameContentLen];
+        memcpy(frameContent, data + idx, frameContentLen);
+        idx += frameContentLen;
+
+        int version = VERSION_0;
+        int frameIndex = i + 1;
+
+        UDPFrame* frame = UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, frameContentLen, frameContent);
+        frames->push_back(frame);
+    }
+
+    return frames;
 }
