@@ -1,5 +1,5 @@
 #include "Common.h"
-
+#include "SafePriorityQueue.h"
 #include <iostream>
 #include <gtest/gtest.h>
 

@@ -3,9 +3,9 @@
 
 #include <pthread.h>
 #include <vector>
-#include <priority_queue>
+#include <queue>
 
-template <class T, class Container = std::vector<T>, class Compare = less<typename Container::value_type>>
+template <class T, class Container = std::vector<T>, class Compare = std::less<typename Container::value_type>>
 class SafePriorityQueue {
     private:
         pthread_mutex_t _mutex;
@@ -18,16 +18,16 @@ class SafePriorityQueue {
 
         bool empty() const {
             pthread_mutex_lock(&_mutex);
-            bool = _queue.empty();
+            bool empty = _queue.empty();
             pthread_mutex_unlock(&_mutex);
-            return bool;
+            return empty;
         }
 
         size_t size() const {
             pthread_mutex_lock(&_mutex);
-            size_t = _queue.size();
+            size_t size = _queue.size();
             pthread_mutex_unlock(&_mutex);
-            return size_t;
+            return size;
         }
 
         const T& top() const {

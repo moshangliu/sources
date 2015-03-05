@@ -42,6 +42,13 @@ public:
         map.erase(key);
         pthread_mutex_unlock(&_mutex);
     }
+
+    size_t size() {
+        pthread_mutex_lock(&_mutex);
+        size_t size = map.size();
+        pthread_mutex_unlock(&_mutex);
+        return size;
+    }
 };
 
 #endif
