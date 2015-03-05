@@ -21,41 +21,31 @@ class SafePriorityQueue {
 
         bool empty()  {
             MutexLock lock(&_mutex);
-//            pthread_mutex_lock(&_mutex);
             bool empty = _queue.empty();
-//            pthread_mutex_unlock(&_mutex);
             return empty;
         }
 
         size_t size()  {
             MutexLock lock(&_mutex);
-//            pthread_mutex_lock(&_mutex);
             size_t size = _queue.size();
-//            pthread_mutex_unlock(&_mutex);
             return size;
         }
 
         const T& top()  {
             MutexLock lock(&_mutex);
-//            pthread_mutex_lock(&_mutex);
             const T& top = _queue.top();
-//            pthread_mutex_unlock(&_mutex);
 
             return top;
         }
 
         void push(const T& val) {
             MutexLock lock(&_mutex);
-//            pthread_mutex_lock(&_mutex);
             _queue.push(val);
-//            pthread_mutex_unlock(&_mutex);
         }
 
         void pop() {
             MutexLock lock(&_mutex);
-//            pthread_mutex_lock(&_mutex);
             _queue.pop();
-//            pthread_mutex_unlock(&_mutex);
         }
 };
 
