@@ -4,6 +4,8 @@
 #include <tuple>
 #include <vector>
 
+#include "Common.h"
+
 class UDPRetryTimeSpan {
 private:
     std::tuple<int, int> ZERO;

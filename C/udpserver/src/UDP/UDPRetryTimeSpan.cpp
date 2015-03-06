@@ -8,13 +8,13 @@ pthread_mutex_t UDPRetryTimeSpan::_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 UDPRetryTimeSpan::UDPRetryTimeSpan() {
     // retriedCnt, waitTimeUs
-    ZERO = make_tuple<int, int>(0, 0);
-    ONE = make_tuple<int, int>(1, 10 * 1000);
-    TWO = make_tuple<int, int>(2, 50 * 1000);
-    THREE = make_tuple<int, int>(3, 100 * 1000);
-    FOUR = make_tuple<int, int>(4, 500 * 1000);
-    FIVE = make_tuple<int, int>(5, 1000 * 1000);
-    SIX = make_tuple<int, int>(6, 2000 * 1000);
+    ZERO = make_tuple<int, int>(0, (int)ZERO_WAIT_TIME_US);
+    ONE = make_tuple<int, int>(1, (int)ONE_WAIT_TIME_US);
+    TWO = make_tuple<int, int>(2, (int)TWO_WAIT_TIME_US);
+    THREE = make_tuple<int, int>(3, (int)THREE_WAIT_TIME_US);
+    FOUR = make_tuple<int, int>(4, (int)FOUR_WAIT_TIME_US);
+    FIVE = make_tuple<int, int>(5, (int)FIVE_WAIT_TIME_US);
+    SIX = make_tuple<int, int>(6, (int)SIX_WAIT_TIME_US);
 
     vec.push_back(ZERO);
     vec.push_back(ONE);

@@ -8,14 +8,6 @@ int main(int argc, char **argv)
     return RUN_ALL_TESTS();
 }
 
-const int ZERO_WAIT_TIME_US = 0;
-const int ONE_WAIT_TIME_US = 10*1000;
-const int TWO_WAIT_TIME_US = 50*1000;
-const int THREE_WAIT_TIME_US =  100*1000;
-const int FOUR_WAIT_TIME_US =  500*1000;
-const int FIVE_WAIT_TIME_US =  1000*1000;
-const int SIX_WAIT_TIME_US =  2000*1000;
-
 TEST(UDPRetryTimeSpan, test_maxTryCnt) {
     ASSERT_EQ(6, UDPRetryTimeSpan::instance()->maxTryCnt());
 }
