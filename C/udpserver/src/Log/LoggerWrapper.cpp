@@ -1,8 +1,12 @@
 #include "LoggerWrapper.h"
 #include "MutexLock.h"
 
+#include <cstdarg>
+#include <cstdio>
+
 #include "log4cplus/consoleappender.h"
 #include "log4cplus/layout.h"
+#include "log4cplus/loggingmacros.h"
 
 using namespace std;
 using namespace log4cplus;
@@ -39,4 +43,64 @@ void LoggerWrapper::logger(log4cplus::Logger logger) {
 
 Logger LoggerWrapper::logger() {
     return _logger;
+}
+
+void LoggerWrapper::debug(const char* format, ...) {
+    if (format == NULL) {
+        return;
+    }
+
+    const int LOG_MAX_LEN = 1024;
+    char buf[LOG_MAX_LEN];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buf, LOG_MAX_LEN, format, args);
+    va_end(args);
+
+    LOG4CPLUS_DEBUG(_logger, buf);
+}
+
+void LoggerWrapper::info(const char* format, ...) {
+    if (format == NULL) {
+        return;
+    }
+
+    const int LOG_MAX_LEN = 1024;
+    char buf[LOG_MAX_LEN];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buf, LOG_MAX_LEN, format, args);
+    va_end(args);
+
+    LOG4CPLUS_INFO(_logger, buf);
+}
+
+void LoggerWrapper::warn(const char* format, ...) {
+    if (format == NULL) {
+        return;
+    }
+
+    const int LOG_MAX_LEN = 1024;
+    char buf[LOG_MAX_LEN];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buf, LOG_MAX_LEN, format, args);
+    va_end(args);
+
+    LOG4CPLUS_WARN(_logger, buf);
+}
+
+void LoggerWrapper::error(const char* format, ...) {
+    if (format == NULL) {
+        return;
+    }
+
+    const int LOG_MAX_LEN = 1024;
+    char buf[LOG_MAX_LEN];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buf, LOG_MAX_LEN, format, args);
+    va_end(args);
+
+    LOG4CPLUS_WARN(_logger, buf);
 }

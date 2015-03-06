@@ -16,6 +16,11 @@ public:
     static LoggerWrapper* instance();
     void logger(log4cplus::Logger logger);
     log4cplus::Logger logger();
+
+    void debug(const char* format, ...);
+    void info(const char* format, ...);
+    void warn(const char* format, ...);
+    void error(const char* format, ...);
 };
 
 #endif

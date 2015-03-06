@@ -77,6 +77,14 @@ TEST(current_us, test_current_us) {
     cout << "Now(us): " << now << endl;
 }
 
+TEST(format, test_format) {
+    int packetId = 1234;
+    byte frameIndex = 12;
+
+    string key = format("%d-%d", packetId, frameIndex);
+    ASSERT_EQ("1234-12", key);
+}
+
 TEST(makeKey, test_makeKey) {
     int packetId = 1234;
     byte frameIndex = 12;

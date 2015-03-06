@@ -24,7 +24,8 @@ void UDPTranceiver::logger(log4cplus::Logger logger) {
 }
 
 void UDPTranceiver::run() {
-    LOG4CPLUS_DEBUG(LoggerWrapper::instance()->logger(), "UDPTranceiver started");
+//    LOG4CPLUS_DEBUG(LoggerWrapper::instance()->logger(), "UDPTranceiver started");
+    LoggerWrapper::instance()->debug("UDPTranceiver started on port:%d", _port);
     _listenThread->run();
 }
 

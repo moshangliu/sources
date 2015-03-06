@@ -194,8 +194,16 @@ long current_us() {
 }
 
 string makeKey(int packetId, byte frameIndex) {
-    char buf[100] = {0};
-    sprintf(buf, "%d-%d", packetId, frameIndex);
+    return format("%d-%d", packetId, frameIndex);
+}
+
+string format(const char* format, ...) {
+    const int LOG_MAX_LEN = 1024;
+    char buf[LOG_MAX_LEN];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buf, LOG_MAX_LEN, format, args);
+    va_end(args);
 
     return string(buf);
 }

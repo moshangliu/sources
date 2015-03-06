@@ -6,6 +6,8 @@
 #include <map>
 #include <tuple>
 #include <atomic>
+#include <cstdio>
+#include <cstdarg>
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -109,4 +111,7 @@ int16 toInt16(byte b1, byte b2);
 long current_us();
 
 std::string makeKey(int packetId, byte frameIndex);
+
+std::string format(const char* format, ...);
+
 #endif
