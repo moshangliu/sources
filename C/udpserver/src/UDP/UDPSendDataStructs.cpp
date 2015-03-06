@@ -1,5 +1,5 @@
 #include "Common.h"
-#include "UDPResendQueue.h"
+#include "UDPSendDataStructs.h"
 #include "UDPRetryTimeSpan.h"
 #include "MutexLock.h"
 

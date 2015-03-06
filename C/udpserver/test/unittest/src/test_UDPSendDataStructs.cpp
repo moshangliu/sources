@@ -1,5 +1,5 @@
 #include "UDPFrame.h"
-#include "UDPResendQueue.h"
+#include "UDPSendDataStructs.h"
 
 #include <gtest/gtest.h>
 

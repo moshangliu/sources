@@ -2,6 +2,7 @@
 #define UDPRESENDQUEUE_H_
 
 #include <vector>
+#include <string>
 #include "UDPFrame.h"
 #include "SafePriorityQueue.h"
 
@@ -46,5 +47,18 @@ public:
     void pop() { _queue.pop(); }
 
 };
+
+/*class UDPAckMap {
+private:
+    // packetId + frameIndex, acked
+    SafeMap<string, bool> _map;
+
+    static pthread_mutex_t _mutex;
+    static UDPResendQueue* _instance;
+
+    UDPAckMap();
+public:
+
+};*/
 
 #endif /* UDPRESENDQUEUE_H_ */

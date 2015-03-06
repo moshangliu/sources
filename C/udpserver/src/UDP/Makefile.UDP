@@ -1,2 +1,2 @@
 include ../../Makefile.d
-all: UDPTranceiver.o UDPFrameHelper.o UDPPacketIdCreator.o UDPRetryTimeSpan.o UDPResendQueue.o
+all: UDPTranceiver.o UDPFrameHelper.o UDPPacketIdCreator.o UDPRetryTimeSpan.o UDPSendDataStructs.o
