@@ -97,4 +97,6 @@ int32 toInt32(byte b1, byte b2, byte b3, byte b4);
 std::tuple<byte, byte> int16To2Bytes(int16 d);
 
 int16 toInt16(byte b1, byte b2);
+
+long current_us();
 #endif

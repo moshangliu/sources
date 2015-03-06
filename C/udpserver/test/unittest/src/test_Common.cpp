@@ -71,3 +71,8 @@ TEST(toInt16, test_toInt16) {
 
     ASSERT_EQ((int16)0xFAFB, toInt16(b1, b2));
 }
+
+TEST(current_us, test_current_us) {
+    long now = current_us();
+    cout << "Now(us): " << now << endl;
+}

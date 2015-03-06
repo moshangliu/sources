@@ -1,5 +1,6 @@
 #include "Common.h"
 
+#include <sys/time.h>
 #include <errno.h>
 #include <unistd.h>
 #include <cstring>
@@ -174,4 +175,11 @@ int16 toInt16(byte b1, byte b2) {
     result |= b;
 
     return result;
+}
+
+long current_us() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+
+    return tv.tv_sec * 1000 * 1000 + tv.tv_usec;
 }
