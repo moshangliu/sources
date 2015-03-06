@@ -107,4 +107,6 @@ std::tuple<byte, byte> int16To2Bytes(int16 d);
 int16 toInt16(byte b1, byte b2);
 
 long current_us();
+
+std::string makeKey(int packetId, byte frameIndex);
 #endif

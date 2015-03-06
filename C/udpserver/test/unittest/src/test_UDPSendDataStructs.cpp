@@ -108,4 +108,18 @@ TEST(UDPResendQueue, test_UDPResendQueue) {
     ASSERT_EQ(obj->frame()->frameIndex(), obj1->frame()->frameIndex());
 }
 
+TEST(UDPAckMap, test_UDPAckMap) {
+    ASSERT_EQ(0, UDPAckMap::instance()->size());
 
+    int packetId = 1234;
+    byte frameIndex = 1;
+    ASSERT_FALSE(UDPAckMap::instance()->isAcked(packetId, frameIndex));
+
+    UDPAckMap::instance()->setAcked(packetId, frameIndex, true);
+    ASSERT_TRUE(UDPAckMap::instance()->isAcked(packetId, frameIndex));
+    ASSERT_EQ(1, UDPAckMap::instance()->size());
+
+    UDPAckMap::instance()->setAcked(packetId, frameIndex, false);
+    ASSERT_FALSE(UDPAckMap::instance()->isAcked(packetId, frameIndex));
+    ASSERT_EQ(1, UDPAckMap::instance()->size());
+}

@@ -5,6 +5,7 @@
 #include <string>
 #include "UDPFrame.h"
 #include "SafePriorityQueue.h"
+#include "SafeMap.h"
 
 class UDPResendObj {
 private:
@@ -48,17 +49,23 @@ public:
 
 };
 
-/*class UDPAckMap {
+class UDPAckMap {
 private:
     // packetId + frameIndex, acked
-    SafeMap<string, bool> _map;
+    SafeMap<std::string, bool> _map;
 
     static pthread_mutex_t _mutex;
-    static UDPResendQueue* _instance;
+    static UDPAckMap* _instance;
 
     UDPAckMap();
-public:
 
-};*/
+public:
+    static UDPAckMap* instance();
+
+    bool isAcked(int packetId, byte frameIndex);
+    void erase(int packetId, byte frameIndex);
+    void setAcked(int packetId, byte frameIndex, bool acked);
+    size_t size();
+};
 
 #endif /* UDPRESENDQUEUE_H_ */

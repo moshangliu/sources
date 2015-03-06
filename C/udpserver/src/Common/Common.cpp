@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cstdio>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -190,4 +191,11 @@ long current_us() {
     gettimeofday(&tv, NULL);
 
     return tv.tv_sec * 1000 * 1000 + tv.tv_usec;
+}
+
+string makeKey(int packetId, byte frameIndex) {
+    char buf[100] = {0};
+    sprintf(buf, "%d-%d", packetId, frameIndex);
+
+    return string(buf);
 }

@@ -76,3 +76,11 @@ TEST(current_us, test_current_us) {
     long now = current_us();
     cout << "Now(us): " << now << endl;
 }
+
+TEST(makeKey, test_makeKey) {
+    int packetId = 1234;
+    byte frameIndex = 12;
+
+    string key = makeKey(packetId, frameIndex);
+    ASSERT_EQ("1234-12", key);
+}

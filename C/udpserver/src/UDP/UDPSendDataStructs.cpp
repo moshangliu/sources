@@ -31,3 +31,43 @@ UDPResendQueue* UDPResendQueue::instance() {
 
     return _instance;
 }
+
+UDPAckMap* UDPAckMap::_instance = NULL;
+pthread_mutex_t UDPAckMap::_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+UDPAckMap::UDPAckMap() {}
+UDPAckMap* UDPAckMap::instance() {
+    if (_instance == NULL) {
+        MutexLock lock(&_mutex);
+        if (_instance == NULL) {
+            _instance = new UDPAckMap();
+        }
+    }
+
+    return _instance;
+}
+
+void UDPAckMap::setAcked(int packetId, byte frameIndex, bool acked) {
+    string key = makeKey(packetId, frameIndex);
+    _map.put(key, acked);
+}
+
+bool UDPAckMap::isAcked(int packetId, byte frameIndex) {
+    string key = makeKey(packetId, frameIndex);
+    if (!_map.has(key)) {
+        return false;
+    }
+
+    return _map.get(key);
+}
+
+void UDPAckMap::erase(int packetId, byte frameIndex) {
+    string key = makeKey(packetId, frameIndex);
+    if (_map.has(key)) {
+        _map.erase(key);
+    }
+}
+
+size_t UDPAckMap::size() {
+    return _map.size();
+}
