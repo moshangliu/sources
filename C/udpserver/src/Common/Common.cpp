@@ -18,6 +18,14 @@ const int UDP_FRAME_MAX_SIZE = 1025;
 const int UDP_FRAME_MAX_COUNT = 127;
 const int UDP_PACKET_MAX_SIZE = UDP_FRAME_MAX_SIZE * UDP_FRAME_MAX_COUNT;
 
+const int ZERO_WAIT_TIME_US = 0;
+const int ONE_WAIT_TIME_US = 10*1000;
+const int TWO_WAIT_TIME_US = 50*1000;
+const int THREE_WAIT_TIME_US =  100*1000;
+const int FOUR_WAIT_TIME_US =  500*1000;
+const int FIVE_WAIT_TIME_US =  1000*1000;
+const int SIX_WAIT_TIME_US =  2000*1000;
+
 int split(string str, string delim, vector<string>& parts)
 {
     if (delim.length() == 0)

@@ -27,6 +27,14 @@ extern const int UDP_FRAME_MAX_SIZE;
 extern const int UDP_FRAME_MAX_COUNT;
 extern const int UDP_PACKET_MAX_SIZE;
 
+extern const int ZERO_WAIT_TIME_US;
+extern const int ONE_WAIT_TIME_US;
+extern const int TWO_WAIT_TIME_US;
+extern const int THREE_WAIT_TIME_US;
+extern const int FOUR_WAIT_TIME_US;
+extern const int FIVE_WAIT_TIME_US;
+extern const int SIX_WAIT_TIME_US;
+
 /**
  * @brief: split [str] with [delim] and store in [parts]
  * @param [in] str: string splited
