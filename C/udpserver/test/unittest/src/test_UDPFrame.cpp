@@ -19,7 +19,7 @@ TEST(UDPFrame, test_build_packet) {
     const int16 contentLen = 10;
     byte* content = new byte[contentLen];
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = i;
+        content[i] = rand();
     }
 
     UDPFrame* frame = UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, contentLen, content);
@@ -58,7 +58,7 @@ TEST(UDPFrame, test_serialize_packet) {
     const int16 contentLen = 10;
     byte* content = new byte[contentLen];
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = i;
+        content[i] = rand();
     }
 
     UDPFrame* frame = UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, contentLen, content);
@@ -137,7 +137,7 @@ TEST(UDPFrame, test_segment_half_packet) {
     int dataLen = UDP_FRAME_MAX_SIZE / 2;
     byte* data = new byte[dataLen];
     for (int i = 0; i < dataLen; i++) {
-        data[i] = i;
+        data[i] = rand();
     }
     test_segment(data, dataLen);
 }
@@ -146,7 +146,7 @@ TEST(UDPFrame, test_segment_one_packet) {
     int dataLen = UDP_FRAME_MAX_SIZE;
     byte* data = new byte[dataLen];
     for (int i = 0; i < dataLen; i++) {
-        data[i] = i;
+        data[i] = rand();
     }
     test_segment(data, dataLen);
 }
@@ -155,7 +155,7 @@ TEST(UDPFrame, test_segment_one_half_packet) {
     int dataLen = UDP_FRAME_MAX_SIZE * 3 / 2;
     byte* data = new byte[dataLen];
     for (int i = 0; i < dataLen; i++) {
-        data[i] = i;
+        data[i] = rand();
     }
     test_segment(data, dataLen);
 }
@@ -164,7 +164,7 @@ TEST(UDPFrame, test_segment_two_packet) {
     int dataLen = UDP_FRAME_MAX_SIZE * 2;
     byte* data = new byte[dataLen];
     for (int i = 0; i < dataLen; i++) {
-        data[i] = i;
+        data[i] = rand();
     }
     test_segment(data, dataLen);
 }
@@ -173,7 +173,7 @@ TEST(UDPFrame, test_segment_max_packet_notfull) {
     int dataLen = UDP_PACKET_MAX_SIZE - (UDP_FRAME_MAX_SIZE / 2);
     byte* data = new byte[dataLen];
     for (int i = 0; i < dataLen; i++) {
-        data[i] = i;
+        data[i] = rand();
     }
     test_segment(data, dataLen);
 }
@@ -182,7 +182,7 @@ TEST(UDPFrame, test_segment_max_packet_full) {
     int dataLen = UDP_PACKET_MAX_SIZE;
     byte* data = new byte[dataLen];
     for (int i = 0; i < dataLen; i++) {
-        data[i] = i;
+        data[i] = rand();
     }
     test_segment(data, dataLen);
 }
@@ -191,7 +191,7 @@ TEST(UDPFrame, test_segment_over_max_packet) {
     int dataLen = UDP_PACKET_MAX_SIZE + 1;
     byte* data = new byte[dataLen];
     for (int i = 0; i < dataLen; i++) {
-        data[i] = i;
+        data[i] = rand();
     }
     test_segment(data, dataLen);
 }
