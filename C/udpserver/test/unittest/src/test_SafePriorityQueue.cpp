@@ -21,20 +21,20 @@ private:
     string _value;
 
 public:
-    long timeStampMs() const { return _timeStampMs; }
-    string value() const { return _value; }
+    long timeStampMs() { return _timeStampMs; }
+    string value()  { return _value; }
 };
 
 class ObjectComp4MaxHeap {
 public:
-    bool operator() (const Object* v1, const Object* v2) const {
+    bool operator() (Object* v1, Object* v2) {
         return (v1->timeStampMs()) < (v2->timeStampMs());
     }
 };
 
 class ObjectComp4MinHeap {
 public:
-    bool operator() (const Object* v1, const Object* v2) const {
+    bool operator() (Object* v1, Object* v2) {
         return (v1->timeStampMs()) > (v2->timeStampMs());
     }
 };

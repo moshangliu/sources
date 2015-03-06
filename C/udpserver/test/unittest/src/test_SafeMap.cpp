@@ -35,4 +35,8 @@ TEST(SafeMap, test_SafeMap) {
     data.erase("K3");
     ASSERT_EQ(2, data.size());
     ASSERT_FALSE(data.has("K3"));
+
+    data.erase("K4");
+    ASSERT_EQ(2, data.size());
+    ASSERT_FALSE(data.has("K3"));
 }
