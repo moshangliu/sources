@@ -1,9 +1,8 @@
+#include "Common.h"
 #include "UDPFrame.h"
 #include "UDPFrameHelper.h"
 
 #include <gtest/gtest.h>
-
-bool assertSame(const byte* data1, const byte* data2, int32 len);
 
 int main(int argc, char **argv)
 {
@@ -30,7 +29,7 @@ TEST(UDPFrame, test_build_packet) {
     ASSERT_EQ(frameCount, frame->frameCount());
     ASSERT_EQ(frameIndex, frame->frameIndex());
     ASSERT_EQ(contentLen, frame->contentLength());
-    ASSERT_TRUE(assertSame(content, frame->content(), contentLen));
+    ASSERT_TRUE(same(content, frame->content(), contentLen));
 }
 
 TEST(UDPFrame, test_build_ack) {
@@ -75,7 +74,7 @@ TEST(UDPFrame, test_serialize_packet) {
     ASSERT_EQ(frameIndex, data[7]);
     ASSERT_EQ(contentLen, toInt16(data[8], data[9]));
 
-    ASSERT_TRUE(assertSame(data + UDP_FRAME_HEADER_LEN_FOR_VERSION_0, frame->content(), frame->contentLength()));
+    ASSERT_TRUE(same(data + UDP_FRAME_HEADER_LEN_FOR_VERSION_0, frame->content(), frame->contentLength()));
 }
 
 TEST(UDPFrame, test_serialize_ack) {
@@ -124,7 +123,7 @@ TEST(UDPFrame, test_unserialize_packet) {
     ASSERT_EQ(frame->frameCount(), frameNew->frameCount());
     ASSERT_EQ(frame->frameIndex(), frameNew->frameIndex());
     ASSERT_EQ(frame->contentLength(), frameNew->contentLength());
-    ASSERT_TRUE(assertSame(frame->content(), frameNew->content(), contentLen));
+    ASSERT_TRUE(same(frame->content(), frameNew->content(), contentLen));
 }
 
 void test_segment(byte* data, int dataLen);
@@ -223,20 +222,6 @@ void test_segment(byte* data, int dataLen) {
         int contentLenExpected = i == frameCount - 1 ? dataLen - i*UDP_FRAME_MAX_SIZE : UDP_FRAME_MAX_SIZE;
         ASSERT_EQ(contentLenExpected, frame->contentLength());
 
-        assertSame(data + i*UDP_FRAME_MAX_SIZE, frame->content(), frame->contentLength());
+        same(data + i*UDP_FRAME_MAX_SIZE, frame->content(), frame->contentLength());
     }
-}
-
-bool assertSame(const byte* data1, const byte* data2, int32 len) {
-    if (data1 == NULL && data2 == NULL) {
-        return true;
-    }
-
-    for (int32 i = 0; i < len; i++) {
-        if (data1[i] != data2[i]) {
-            return false;
-        }
-    }
-
-    return true;
 }

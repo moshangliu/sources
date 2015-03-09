@@ -112,6 +112,10 @@ long current_us();
 
 std::string makeKey(int packetId, byte frameIndex);
 
+std::string makeRecvPacketKey(const std::string& ip, int port, int packetId);
+
 std::string format(const char* format, ...);
+
+bool same(const byte* data1, const byte* data2, int32 len);
 
 #endif

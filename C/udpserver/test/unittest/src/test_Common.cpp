@@ -92,3 +92,12 @@ TEST(makeKey, test_makeKey) {
     string key = makeKey(packetId, frameIndex);
     ASSERT_EQ("1234-12", key);
 }
+
+TEST(makeRecvPacketKey, test_makeRecvPacketKey) {
+    string ip = "127.0.0.1";
+    int packetId = 1234;
+    byte frameIndex = 12;
+
+    string key = makeRecvPacketKey(ip, packetId, frameIndex);
+    ASSERT_EQ("127.0.0.1:1234-12", key);
+}

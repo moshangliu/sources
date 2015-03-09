@@ -197,6 +197,10 @@ string makeKey(int packetId, byte frameIndex) {
     return format("%d-%d", packetId, frameIndex);
 }
 
+string makeRecvPacketKey(const string& ip, int port, int packetId) {
+    return format("%s:%d-%d", ip.c_str(), port, packetId);
+}
+
 string format(const char* format, ...) {
     const int LOG_MAX_LEN = 1024;
     char buf[LOG_MAX_LEN];
@@ -206,4 +210,18 @@ string format(const char* format, ...) {
     va_end(args);
 
     return string(buf);
+}
+
+bool same(const byte* data1, const byte* data2, int32 len) {
+    if (data1 == NULL && data2 == NULL) {
+        return true;
+    }
+
+    for (int32 i = 0; i < len; i++) {
+        if (data1[i] != data2[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }

@@ -52,8 +52,6 @@ TEST(UDPRecvObj, test_UDPRecvObj_put) {
     ASSERT_TRUE(recvObj.completed());
 }
 
-bool assertSame(const byte* data1, const byte* data2, int32 len);
-
 TEST(UDPRecvObj, test_UDPRecvObj_assemble_one_frame) {
     int dataLen = UDP_FRAME_MAX_SIZE;
     byte* data = new byte[dataLen];
@@ -73,7 +71,7 @@ TEST(UDPRecvObj, test_UDPRecvObj_assemble_one_frame) {
     ASSERT_TRUE(recvObj.completed());
 
     tuple<byte*, int> result = recvObj.assemble();
-    ASSERT_TRUE(assertSame(data, get<0>(result), dataLen));
+    ASSERT_TRUE(same(data, get<0>(result), dataLen));
     ASSERT_EQ(dataLen, get<1>(result));
 }
 
@@ -122,20 +120,57 @@ TEST(UDPRecvObj, test_UDPRecvObj_assemble_multi_frames_finish) {
     }
     ASSERT_TRUE(recvObj.completed());
     tuple<byte*, int> result = recvObj.assemble();
-    ASSERT_TRUE(assertSame(data, get<0>(result), dataLen));
+    ASSERT_TRUE(same(data, get<0>(result), dataLen));
     ASSERT_EQ(dataLen, get<1>(result));
 }
 
-bool assertSame(const byte* data1, const byte* data2, int32 len) {
-    if (data1 == NULL && data2 == NULL) {
-        return true;
+
+TEST(UDPRecvContainer, test_UDPRecvContainer_one_frame) {
+    string ip = "127.0.0.1";
+    int port = 1234;
+
+    int dataLen = UDP_FRAME_MAX_SIZE;
+    byte* data = new byte[dataLen];
+    for (int i = 0; i < dataLen; i++) {
+        data[i] = rand();
     }
 
-    for (int32 i = 0; i < len; i++) {
-        if (data1[i] != data2[i]) {
-            return false;
-        }
+    vector<UDPFrame*>* frames = UDPFrameHelper::segment(data, dataLen);
+    ASSERT_EQ(1, frames->size());
+
+    tuple<bool, byte*, int> t = UDPRecvContainer::instance()->putOrAssemble(ip, port, frames->at(0));
+    ASSERT_TRUE(get<0>(t));
+    ASSERT_TRUE(get<1>(t) != NULL);
+    ASSERT_EQ(dataLen, get<2>(t));
+    ASSERT_TRUE(same(get<1>(t), data, dataLen));
+}
+
+TEST(UDPRecvContainer, test_UDPRecvContainer_two_frame) {
+    string ip = "127.0.0.1";
+    int port = 1234;
+
+    int dataLen = UDP_FRAME_MAX_SIZE * 2;
+    byte* data = new byte[dataLen];
+    for (int i = 0; i < dataLen; i++) {
+        data[i] = rand();
     }
 
-    return true;
+    vector<UDPFrame*>* frames = UDPFrameHelper::segment(data, dataLen);
+    ASSERT_EQ(2, frames->size());
+
+    tuple<bool, byte*, int> t = UDPRecvContainer::instance()->putOrAssemble(ip, port, frames->at(0));
+    ASSERT_FALSE(get<0>(t));
+    ASSERT_TRUE(get<1>(t) == NULL);
+    ASSERT_EQ(0, get<2>(t));
+
+    t = UDPRecvContainer::instance()->putOrAssemble(ip, port, frames->at(0));
+    ASSERT_FALSE(get<0>(t));
+    ASSERT_TRUE(get<1>(t) == NULL);
+    ASSERT_EQ(0, get<2>(t));
+
+    t = UDPRecvContainer::instance()->putOrAssemble(ip, port, frames->at(1));
+    ASSERT_TRUE(get<0>(t));
+    ASSERT_TRUE(get<1>(t) != NULL);
+    ASSERT_EQ(dataLen, get<2>(t));
+    ASSERT_TRUE(same(get<1>(t), data, dataLen));
 }
