@@ -10,6 +10,8 @@ int main(int argc, char **argv)
 }
 
 TEST(UDPResendObj, test_UDPResendObj) {
+    string ip = "127.0.0.1";
+    int port = 1234;
     byte version = VERSION_0;
     int32 packetId = 123;
     byte frameCount = 1;
@@ -22,7 +24,9 @@ TEST(UDPResendObj, test_UDPResendObj) {
 
     UDPFrame* frame = UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, contentLen, content);
 
-    UDPResendObj* obj = new UDPResendObj(frame);
+    UDPResendObj* obj = new UDPResendObj(ip, port, frame);
+    ASSERT_EQ(ip, obj->ip());
+    ASSERT_EQ(port, obj->port());
     long currentUs = current_us();
     ASSERT_TRUE((currentUs - obj->sendTsUs()) > 0);
     ASSERT_TRUE((currentUs - obj->sendTsUs()) < 1000);
@@ -66,6 +70,9 @@ TEST(UDPResendObj, test_UDPResendObj) {
 }
 
 TEST(UDPResendQueue, test_UDPResendQueue) {
+    string ip = "127.0.0.1";
+    int port = 1234;
+
     byte version = VERSION_0;
     int32 packetId = 123;
     byte frameCount = 2;
@@ -82,11 +89,11 @@ TEST(UDPResendQueue, test_UDPResendQueue) {
 
     byte frameIndex = 1;
     UDPFrame* frame1 = UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, contentLen, content1);
-    UDPResendObj* obj1 = new UDPResendObj(frame1);
+    UDPResendObj* obj1 = new UDPResendObj(ip, port, frame1);
 
     frameIndex = 2;
     UDPFrame* frame2 = UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, contentLen, content2);
-    UDPResendObj* obj2 = new UDPResendObj(frame2);
+    UDPResendObj* obj2 = new UDPResendObj(ip, port, frame2);
 
     UDPResendQueue::instance()->push(obj1);
     UDPResendQueue::instance()->push(obj2);

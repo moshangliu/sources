@@ -10,15 +10,21 @@
 
 class UDPResendObj {
 private:
+    std::string _ip;
+    int _port;
     UDPFrame* _frame;
+
     int _triedCnt;
     long _sendTsUs;
+
 public:
-    UDPResendObj(UDPFrame* frame);
+    UDPResendObj(std::string ip, int port, UDPFrame* frame);
     ~UDPResendObj();
 
     void update();
 
+    std::string& ip() { return _ip; }
+    int port() { return _port; }
     UDPFrame* frame() { return _frame; }
     long sendTsUs() const { return _sendTsUs; }
     int triedCnt() const { return _triedCnt; }

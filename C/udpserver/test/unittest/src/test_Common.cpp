@@ -1,8 +1,10 @@
 #include "Common.h"
 
 #include <iostream>
+#include <arpa/inet.h>
 #include<fcntl.h>
 #include <sys/stat.h>
+
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -100,4 +102,15 @@ TEST(makeRecvPacketKey, test_makeRecvPacketKey) {
 
     string key = makeRecvPacketKey(ip, packetId, frameIndex);
     ASSERT_EQ("127.0.0.1:1234-12", key);
+}
+
+TEST(ip2in_addr, test_ip2in_addr) {
+    string ip = "192.168.1.1";
+
+    in_addr addr;
+    addr.s_addr = inet_addr(ip.c_str());
+    string newIP = string(inet_ntoa(addr));
+
+    ASSERT_EQ(ip, newIP);
+
 }

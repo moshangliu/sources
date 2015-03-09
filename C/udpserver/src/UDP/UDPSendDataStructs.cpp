@@ -5,8 +5,8 @@
 
 using namespace std;
 
-UDPResendObj::UDPResendObj(UDPFrame* frame)
-    : _frame(frame), _triedCnt(0), _sendTsUs(current_us()) {}
+UDPResendObj::UDPResendObj(string ip, int port, UDPFrame* frame)
+    : _ip(ip), _port(port), _frame(frame), _triedCnt(0), _sendTsUs(current_us()) {}
 
 UDPResendObj::~UDPResendObj() {
     delete _frame;

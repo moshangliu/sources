@@ -42,15 +42,7 @@ void UDPTranceiver::send(std::string ip, int port, char* data, int dataLen) {
 
     vector<UDPFrame*>* frames = UDPFrameHelper::segment((byte*)data, dataLen);
     for (vector<UDPFrame*>::iterator it = frames->begin(); it != frames->end(); it++) {
-        UDPSendQueue::instance()->push(new UDPResendObj(*it));
-
-        int packetId = (*it)->packetId();
-        byte frameCount = (*it)->frameCount();
-        byte frameIndex = (*it)->frameIndex();
-        UDPAckMap::instance()->setAcked(packetId, frameIndex, false);
-
-        LoggerWrapper::instance()->debug("UDPTrace, SEND_PACKET, %s:%d, PACKET_ID:%d, %d/%d",
-            ip.c_str(), port, packetId, frameIndex, frameCount);
+        UDPSendQueue::instance()->push(new UDPResendObj(ip, port, *it));
     }
 
     delete frames;
