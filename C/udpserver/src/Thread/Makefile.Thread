@@ -1,2 +1,2 @@
 include ../../Makefile.d
-all: Thread.o ListenThread.o
+all: Thread.o ListenThread.o UDPSendThread.o

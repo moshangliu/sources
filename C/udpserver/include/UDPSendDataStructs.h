@@ -69,7 +69,7 @@ public:
 
     void push(UDPResendObj* obj) { _queue->push(obj); }
 
-    void pop() { _queue->pop(); }
+    UDPResendObj* pop() { return _queue->pop(); }
 
 };
 
