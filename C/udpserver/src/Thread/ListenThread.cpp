@@ -16,8 +16,8 @@ using namespace std;
 typedef struct sockaddr sockaddr_t;
 
 ListenThread::ListenThread(uint32 port) : _port(port) {
-    listenfd = 0;
-    if ((listenfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    _listenfd = 0;
+    if ((_listenfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         cerr << "Failed to create listen socket." << endl;
         exit(2);
     }
@@ -71,8 +71,8 @@ void* ListenThread::process() {
         exit(1);
     }
 
-    Bind(listenfd);
-    accept(listenfd);
+    Bind(_listenfd);
+    accept(_listenfd);
 
     return NULL;
 }

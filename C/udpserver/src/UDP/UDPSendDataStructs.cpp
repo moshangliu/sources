@@ -17,6 +17,25 @@ void UDPResendObj::update() {
     _sendTsUs += UDPRetryTimeSpan::instance()->waitTimeUs(_triedCnt);
 }
 
+UDPSendQueue* UDPSendQueue::_instance = NULL;
+pthread_mutex_t UDPSendQueue::_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+UDPSendQueue::UDPSendQueue() {
+    _queue = new SafeQueue<UDPResendObj*>(1024*1024*1024);
+}
+
+UDPSendQueue* UDPSendQueue::instance() {
+    if (_instance == NULL) {
+        MutexLock lock(&_mutex);
+        if (_instance == NULL) {
+            _instance = new UDPSendQueue();
+        }
+    }
+
+    return _instance;
+}
+
+
 UDPResendQueue* UDPResendQueue::_instance = NULL;
 pthread_mutex_t UDPResendQueue::_mutex = PTHREAD_MUTEX_INITIALIZER;
 

@@ -25,11 +25,13 @@ class ListenThread : public Thread
 
         uint32 _port;
 
-        int listenfd;
+        int _listenfd;
 
         void Bind(int listenfd);
 
         void accept(int listenfd);
+
+        int listenFd() { return _listenfd; }
 
 };
 

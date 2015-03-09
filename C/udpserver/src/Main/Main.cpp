@@ -1,4 +1,6 @@
 #include <iostream>
+#include <unistd.h>
+#include <time.h>
 #include "UDPTranceiver.h"
 
 using namespace std;

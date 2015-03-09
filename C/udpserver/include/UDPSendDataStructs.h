@@ -5,6 +5,7 @@
 #include <string>
 #include "UDPFrame.h"
 #include "SafePriorityQueue.h"
+#include "SafeQueue.h"
 #include "SafeMap.h"
 
 class UDPResendObj {
@@ -46,6 +47,23 @@ public:
     void push(UDPResendObj* obj) { _queue.push(obj); }
 
     void pop() { _queue.pop(); }
+
+};
+
+class UDPSendQueue {
+private:
+    SafeQueue<UDPResendObj*>* _queue;
+
+    static pthread_mutex_t _mutex;
+    static UDPSendQueue* _instance;
+
+    UDPSendQueue();
+public:
+    static UDPSendQueue* instance();
+
+    void push(UDPResendObj* obj) { _queue->push(obj); }
+
+    void pop() { _queue->pop(); }
 
 };
 

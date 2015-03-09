@@ -16,6 +16,8 @@ public:
 
     void run();
     void join();
+
+    void send(std::string ip, int port, char* data, int dataLen);
 };
 
 #endif
