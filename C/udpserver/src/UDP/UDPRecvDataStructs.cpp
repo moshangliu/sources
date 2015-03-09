@@ -94,13 +94,15 @@ tuple<bool, byte*, int> UDPRecvContainer::putOrAssemble(string ip, int port, UDP
 
     MutexLock lock(&_mutex4container);
 
-    if (!_udpRecvObjs.has(packetKey)) {
+    map<std::string, UDPRecvObj*>::iterator it = _udpRecvObjs.find(packetKey);
+    if (it == _udpRecvObjs.end()) {
         UDPRecvObj* obj = new UDPRecvObj(ip, port, packetId, frame->frameCount());
-        _udpRecvObjs.put(packetKey, obj);
+        _udpRecvObjs[packetKey] = obj;
         _udpRecvMetas.push(new UDPRecvObjMeta(ip, port, packetId));
     }
 
-    UDPRecvObj* obj = _udpRecvObjs.get(packetKey);
+    it = _udpRecvObjs.find(packetKey);
+    UDPRecvObj* obj = it->second;
     obj->put(frame);
 
     if (!obj->completed()) {
@@ -108,8 +110,8 @@ tuple<bool, byte*, int> UDPRecvContainer::putOrAssemble(string ip, int port, UDP
     }
 
     tuple<byte*, int> content = obj->assemble();
+    _udpRecvObjs.erase(it);
     delete obj;
-    _udpRecvObjs.erase(packetKey);
 
     return make_tuple(true, get<0>(content), get<1>(content));
 }
@@ -130,12 +132,14 @@ int UDPRecvContainer::expireOrReturnSleepUs() {
 
     _udpRecvMetas.pop();
     string packetKey = meta->packetKey();
-    if (!_udpRecvObjs.has(packetKey)) {
+    map<std::string, UDPRecvObj*>::iterator it = _udpRecvObjs.find(packetKey);
+    if (it == _udpRecvObjs.end()) {
         delete meta;
         return 0;
     }
 
-    UDPRecvObj* obj = _udpRecvObjs.get(packetKey);
+    UDPRecvObj* obj = it->second;
+    _udpRecvObjs.erase(it);
     delete obj;
 
     delete meta;

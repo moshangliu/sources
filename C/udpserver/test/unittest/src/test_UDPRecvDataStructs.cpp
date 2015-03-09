@@ -125,7 +125,7 @@ TEST(UDPRecvObj, test_UDPRecvObj_assemble_multi_frames_finish) {
 }
 
 
-TEST(UDPRecvContainer, test_UDPRecvContainer_one_frame) {
+TEST(UDPRecvContainer, test_UDPRecvContainer_putOrAssemble_one_frame) {
     string ip = "127.0.0.1";
     int port = 1234;
 
@@ -145,7 +145,7 @@ TEST(UDPRecvContainer, test_UDPRecvContainer_one_frame) {
     ASSERT_TRUE(same(get<1>(t), data, dataLen));
 }
 
-TEST(UDPRecvContainer, test_UDPRecvContainer_two_frame) {
+TEST(UDPRecvContainer, test_UDPRecvContainer_putOrAssemble_two_frame) {
     string ip = "127.0.0.1";
     int port = 1234;
 
