@@ -88,7 +88,9 @@ public:
 
     bool isAcked(int packetId, byte frameIndex);
     void erase(int packetId, byte frameIndex);
-    void setAcked(int packetId, byte frameIndex, bool acked);
+
+    void setNotAcked(int packetId, byte frameIndex);
+    void setAckedIfExist(int packetId, byte frameIndex);
     size_t size();
 };
 

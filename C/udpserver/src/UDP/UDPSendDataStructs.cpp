@@ -66,15 +66,24 @@ UDPAckMap* UDPAckMap::instance() {
     return _instance;
 }
 
-void UDPAckMap::setAcked(int packetId, byte frameIndex, bool acked) {
+void UDPAckMap::setNotAcked(int packetId, byte frameIndex) {
     string key = makeKey(packetId, frameIndex);
-    _map.put(key, acked);
+    _map.put(key, false);
+}
+
+void UDPAckMap::setAckedIfExist(int packetId, byte frameIndex) {
+    string key = makeKey(packetId, frameIndex);
+    if (_map.has(key)) {
+        _map.put(key, true);
+    }
 }
 
 bool UDPAckMap::isAcked(int packetId, byte frameIndex) {
     string key = makeKey(packetId, frameIndex);
+
+    // 如果key不存在，说明已经Ack，并将其删除，所以返回true
     if (!_map.has(key)) {
-        return false;
+        return true;
     }
 
     return _map.get(key);
@@ -82,9 +91,8 @@ bool UDPAckMap::isAcked(int packetId, byte frameIndex) {
 
 void UDPAckMap::erase(int packetId, byte frameIndex) {
     string key = makeKey(packetId, frameIndex);
-    if (_map.has(key)) {
-        _map.erase(key);
-    }
+    _map.erase(key);
+
 }
 
 size_t UDPAckMap::size() {

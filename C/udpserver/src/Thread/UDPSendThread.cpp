@@ -28,16 +28,16 @@ void* UDPSendThread::process() {
         addr.sin_addr.s_addr = inet_addr(ip.c_str());
         addr.sin_port = htons(port);
 
+        // Init state
+        obj->update();
+
+        UDPAckMap::instance()->setNotAcked(packetId, frameIndex);
+        UDPResendQueue::instance()->push(obj);
+
         // Send data
         sendto(_listenfd, obj->frame()->content(), obj->frame()->contentLength(),
             0,
             (struct sockaddr*)&addr, addrLen);
-
-        // Init state
-        obj->update();
-
-        UDPAckMap::instance()->setAcked(packetId, frameIndex, false);
-        UDPResendQueue::instance()->push(obj);
 
         LoggerWrapper::instance()->debug("UDPTrace, SEND_PACKET, %s:%d, PACKET_ID:%d, %d/%d",
             ip.c_str(), port, packetId, frameIndex, frameCount);
