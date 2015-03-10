@@ -1,6 +1,6 @@
 #include "Common.h"
 #include "UDPTranceiver.h"
-#include "ListenThread.h"
+#include "UDPRecvThread.h"
 #include "LoggerWrapper.h"
 #include "UDPFrameHelper.h"
 #include "UDPSendDataStructs.h"
@@ -14,7 +14,7 @@ using namespace std;
 using namespace log4cplus;
 
 UDPTranceiver::UDPTranceiver(int port) : _port(port) {
-    _listenThread = new ListenThread(port);
+    _listenThread = new UDPRecvThread(port);
 }
 
 UDPTranceiver::~UDPTranceiver() {

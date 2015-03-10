@@ -6,11 +6,10 @@
 
 class ClientConn;
 
-class ListenThread : public Thread
+class UDPRecvThread : public Thread
 {
     public:
-
-        ListenThread(uint32 port);
+        UDPRecvThread(uint32 port);
 
         /**
          * @brief create server sockaddr

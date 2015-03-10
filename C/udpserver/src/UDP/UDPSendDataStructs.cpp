@@ -78,15 +78,11 @@ void UDPAckMap::setAckedIfExist(int packetId, byte frameIndex) {
     }
 }
 
-bool UDPAckMap::isAcked(int packetId, byte frameIndex) {
+bool UDPAckMap::needResend(int packetId, byte frameIndex) {
     string key = makeKey(packetId, frameIndex);
 
-    // 如果key不存在，说明已经Ack，并将其删除，所以返回true
-    if (!_map.has(key)) {
-        return true;
-    }
+    return _map.has(key) && !_map.get(key); // Not acked
 
-    return _map.get(key);
 }
 
 void UDPAckMap::erase(int packetId, byte frameIndex) {

@@ -21,7 +21,7 @@ void* UDPResendThread::process() {
         /**
          * If acked or reach max try count, remove data
          */
-        if (UDPAckMap::instance()->isAcked(packetId, frameIndex)
+        if (!UDPAckMap::instance()->needResend(packetId, frameIndex)
             || obj->triedCnt() == UDPRetryTimeSpan::instance()->maxTryCnt()) {
             UDPAckMap::instance()->erase(packetId, frameIndex);
             UDPResendQueue::instance()->pop();

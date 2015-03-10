@@ -122,14 +122,18 @@ TEST(UDPAckMap, test_UDPAckMap) {
     byte frameIndex = 1;
 
     UDPAckMap::instance()->setNotAcked(packetId, frameIndex);
-    ASSERT_FALSE(UDPAckMap::instance()->isAcked(packetId, frameIndex));
+    ASSERT_TRUE(UDPAckMap::instance()->needResend(packetId, frameIndex));
     ASSERT_EQ(1, UDPAckMap::instance()->size());
 
     UDPAckMap::instance()->setAckedIfExist(packetId, frameIndex);
-    ASSERT_TRUE(UDPAckMap::instance()->isAcked(packetId, frameIndex));
+    ASSERT_FALSE(UDPAckMap::instance()->needResend(packetId, frameIndex));
     ASSERT_EQ(1, UDPAckMap::instance()->size());
 
     UDPAckMap::instance()->erase(packetId, frameIndex);
-    ASSERT_TRUE(UDPAckMap::instance()->isAcked(packetId, frameIndex));
+    ASSERT_FALSE(UDPAckMap::instance()->needResend(packetId, frameIndex));
+    ASSERT_EQ(0, UDPAckMap::instance()->size());
+
+    UDPAckMap::instance()->erase(packetId, frameIndex);
+    ASSERT_FALSE(UDPAckMap::instance()->needResend(packetId, frameIndex));
     ASSERT_EQ(0, UDPAckMap::instance()->size());
 }

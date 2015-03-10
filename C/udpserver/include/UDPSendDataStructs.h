@@ -86,7 +86,7 @@ private:
 public:
     static UDPAckMap* instance();
 
-    bool isAcked(int packetId, byte frameIndex);
+    bool needResend(int packetId, byte frameIndex);
     void erase(int packetId, byte frameIndex);
 
     void setNotAcked(int packetId, byte frameIndex);

@@ -9,13 +9,13 @@
 #include <netdb.h>
 #include <errno.h>
 
-#include "ListenThread.h"
+#include "UDPRecvThread.h"
 
 using namespace std;
 
 typedef struct sockaddr sockaddr_t;
 
-ListenThread::ListenThread(uint32 port) : _port(port) {
+UDPRecvThread::UDPRecvThread(uint32 port) : _port(port) {
     _listenfd = 0;
     if ((_listenfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         cerr << "Failed to create listen socket." << endl;
@@ -23,7 +23,7 @@ ListenThread::ListenThread(uint32 port) : _port(port) {
     }
 }
 
-struct sockaddr_in* ListenThread::getSvrAddr() {
+struct sockaddr_in* UDPRecvThread::getSvrAddr() {
     struct sockaddr_in* svrAddr = new sockaddr_in();
     memset(svrAddr, 0, sizeof(struct sockaddr_in));
     svrAddr->sin_family = AF_INET;
@@ -33,7 +33,7 @@ struct sockaddr_in* ListenThread::getSvrAddr() {
     return svrAddr;
 }
 
-void ListenThread::Bind(int listenfd) {
+void UDPRecvThread::Bind(int listenfd) {
     struct sockaddr_in* svrAddr = getSvrAddr();
     if (bind(listenfd, (struct sockaddr*)svrAddr, sizeof(struct sockaddr_in)) < 0){
         cerr << "Failed to bind port [" << _port << "]" << endl;
@@ -41,7 +41,7 @@ void ListenThread::Bind(int listenfd) {
     }
 }
 
-void ListenThread::accept(int listenfd) {
+void UDPRecvThread::accept(int listenfd) {
     while (true) {
         const int BUF_LEN = 2048;
         char* buf = new char[BUF_LEN];
@@ -65,7 +65,7 @@ void ListenThread::accept(int listenfd) {
     }
 }
 
-void* ListenThread::process() {
+void* UDPRecvThread::process() {
     if (_port < 0) {
         cerr << "You should bind port > 0" << endl;
         exit(1);
