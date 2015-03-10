@@ -1,2 +1,2 @@
 include ../../Makefile.d
-all: Thread.o UDPRecvThread.o UDPSendThread.o UDPResendThread.o
+all: Thread.o UDPRecvThread.o UDPSendThread.o UDPResendThread.o UDPExpireThread.o

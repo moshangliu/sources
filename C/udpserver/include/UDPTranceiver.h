@@ -7,7 +7,10 @@
 class UDPTranceiver {
 private:
     int _port;
-    Thread* _listenThread;
+    Thread* _udpRecvThread;
+    Thread* _udpSendThread;
+    Thread* _udpResendThread;
+    Thread* _udpExpireThread;
 public:
     UDPTranceiver(int port);
     ~UDPTranceiver();

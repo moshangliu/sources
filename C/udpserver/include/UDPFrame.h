@@ -64,6 +64,10 @@ public:
     static UDPFrame* buildAck(byte version, int32 packetId, byte frameCount, byte frameIndex) {
         return new UDPFrame(version, UDPPacketType::Ack, packetId, frameCount, frameIndex, 0, NULL);
     }
+
+    UDPFrame* buildAck() {
+        return buildAck(_version, _packetId, _frameCount, _frameIndex);
+    }
 };
 
 #endif

@@ -1,6 +1,9 @@
 #include "Common.h"
 #include "UDPTranceiver.h"
 #include "UDPRecvThread.h"
+#include "UDPSendThread.h"
+#include "UDPResendThread.h"
+#include "UDPExpireThread.h"
 #include "LoggerWrapper.h"
 #include "UDPFrameHelper.h"
 #include "UDPSendDataStructs.h"
@@ -14,11 +17,20 @@ using namespace std;
 using namespace log4cplus;
 
 UDPTranceiver::UDPTranceiver(int port) : _port(port) {
-    _listenThread = new UDPRecvThread(port);
+    _udpRecvThread = new UDPRecvThread(port);
+
+    int listenFd = ((UDPRecvThread*)_udpRecvThread)->listenFd();
+    _udpSendThread = new UDPSendThread(listenFd);
+    _udpResendThread = new UDPResendThread(listenFd);
+    _udpExpireThread = new UDPExpireThread();
+
 }
 
 UDPTranceiver::~UDPTranceiver() {
-    delete _listenThread;
+    delete _udpRecvThread;
+    delete _udpSendThread;
+    delete _udpResendThread;
+    delete _udpExpireThread;
 }
 
 void UDPTranceiver::logger(log4cplus::Logger logger) {
@@ -27,11 +39,17 @@ void UDPTranceiver::logger(log4cplus::Logger logger) {
 
 void UDPTranceiver::run() {
     LoggerWrapper::instance()->info("UDPTranceiver started on port:%d", _port);
-    _listenThread->run();
+    _udpRecvThread->run();
+    _udpSendThread->run();
+    _udpResendThread->run();
+    _udpExpireThread->run();
 }
 
 void UDPTranceiver::join() {
-    _listenThread->join();
+    _udpRecvThread->join();
+    _udpSendThread->join();
+    _udpResendThread->join();
+    _udpExpireThread->join();
 }
 
 void UDPTranceiver::send(std::string ip, int port, char* data, int dataLen) {

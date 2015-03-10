@@ -48,7 +48,7 @@ private:
 public:
     static UDPResendQueue* instance();
 
-    UDPResendObj* top() { return _queue.top(); }
+    UDPResendObj* top() { return _queue.size() == 0 ? NULL : _queue.top(); }
 
     void push(UDPResendObj* obj) { _queue.push(obj); }
 

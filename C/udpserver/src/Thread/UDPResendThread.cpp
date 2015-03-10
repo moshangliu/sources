@@ -2,6 +2,7 @@
 #include "UDPResendThread.h"
 #include "UDPSendDataStructs.h"
 #include "UDPRetryTimeSpan.h"
+#include "LoggerWrapper.h"
 
 #include <cstring>
 #include <time.h>
@@ -12,8 +13,16 @@ using namespace std;
 UDPResendThread::UDPResendThread(int listenFd) : _listenfd(listenFd) {}
 
 void* UDPResendThread::process() {
+    const int DEFAULT_SLEEP_US = 10;
+    LoggerWrapper::instance()->info("UDPResendThread started");
+
     while (true) {
+
         UDPResendObj* obj = UDPResendQueue::instance()->top();
+        if (obj == NULL) {
+            usleep(DEFAULT_SLEEP_US);
+            continue;
+        }
 
         int packetId = obj->frame()->packetId();
         byte frameIndex = obj->frame()->frameIndex();

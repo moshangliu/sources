@@ -11,6 +11,8 @@ using namespace std;
 UDPSendThread::UDPSendThread(int listenFd) : _listenfd(listenFd) {}
 
 void* UDPSendThread::process() {
+    LoggerWrapper::instance()->info("UDPSendThread started");
+
     while (true) {
         UDPResendObj* obj = UDPSendQueue::instance()->pop();
         string ip = obj->ip();

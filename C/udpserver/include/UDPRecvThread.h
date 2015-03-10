@@ -3,8 +3,7 @@
 
 #include "Common.h"
 #include "Thread.h"
-
-class ClientConn;
+#include "UDPFrame.h"
 
 class UDPRecvThread : public Thread
 {
@@ -20,6 +19,8 @@ class UDPRecvThread : public Thread
 
         virtual void* process();
 
+        int listenFd() { return _listenfd; }
+
     private:
 
         uint32 _port;
@@ -30,7 +31,7 @@ class UDPRecvThread : public Thread
 
         void accept(int listenfd);
 
-        int listenFd() { return _listenfd; }
+        void sendAck(UDPFrame* frame, struct sockaddr_in* clientAddr);
 
 };
 
