@@ -1,8 +1,10 @@
 #include <cstdio>
 #include <cstring>
 #include <tuple>
+#include <iostream>
 
 #include "MutexLock.h"
+#include "LoggerWrapper.h"
 #include "UDPRecvDataStructs.h"
 
 using namespace std;
@@ -66,22 +68,29 @@ std::tuple<byte*, int> UDPRecvObj::assemble() {
     return make_tuple(data, contentLen);
 }
 
-pthread_mutex_t UDPRecvContainer::_mutex4instance = PTHREAD_MUTEX_INITIALIZER;
-UDPRecvContainer* UDPRecvContainer::_instance = NULL;
+//pthread_mutex_t UDPRecvContainer::_mutex4instance = PTHREAD_MUTEX_INITIALIZER;
+//UDPRecvContainer* UDPRecvContainer::_instance = NULL;
 
 UDPRecvContainer::UDPRecvContainer() {
     _mutex4container = PTHREAD_MUTEX_INITIALIZER;
+//    print("UDPRecvContainer, inited");
+
+//    print("UDPRecvContainer-init");
 }
 
-UDPRecvContainer* UDPRecvContainer::instance() {
-    if (_instance == NULL) {
-        MutexLock lock(&_mutex4instance);
-        if (_instance == NULL) {
-            _instance = new UDPRecvContainer();
-        }
-    }
+//UDPRecvContainer* UDPRecvContainer::instance() {
+//    if (_instance == NULL) {
+//        MutexLock lock(&_mutex4instance);
+//        if (_instance == NULL) {
+//            _instance = new UDPRecvContainer();
+//        }
+//    }
+//
+//    return _instance;
+//}
 
-    return _instance;
+void UDPRecvContainer::print(string s) {
+    LoggerWrapper::instance()->debug("UDPRecvContainer, this: %lld, &_mutex:%lld, %s", (long)this, (long)(&_mutex4container) , s.c_str());
 }
 
 tuple<bool, byte*, int> UDPRecvContainer::putOrAssemble(string ip, int port, UDPFrame* frame) {
@@ -91,6 +100,8 @@ tuple<bool, byte*, int> UDPRecvContainer::putOrAssemble(string ip, int port, UDP
 
     int packetId = frame->packetId();
     string packetKey = makeRecvPacketKey(ip, port, packetId);
+
+//    cout << "_mutex4container locked: " << (long)(&_mutex4container) << endl;
 
     MutexLock lock(&_mutex4container);
 
@@ -119,6 +130,7 @@ tuple<bool, byte*, int> UDPRecvContainer::putOrAssemble(string ip, int port, UDP
 int UDPRecvContainer::expireOrReturnSleepUs() {
     const int DEFAULT_SLEEP_US = 10;
 
+//    print("UDPRecvContainer 131");
     MutexLock lock(&_mutex4container);
     if (_udpRecvMetas.empty()) {
         return DEFAULT_SLEEP_US;

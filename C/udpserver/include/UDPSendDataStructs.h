@@ -17,6 +17,9 @@ private:
     int _triedCnt;
     long _sendTsUs;
 
+    byte* _frameSerializedBin;
+    int _frameSerializedLen;
+
 public:
     UDPResendObj(std::string ip, int port, UDPFrame* frame);
     ~UDPResendObj();
@@ -28,6 +31,8 @@ public:
     UDPFrame* frame() { return _frame; }
     long sendTsUs() const { return _sendTsUs; }
     int triedCnt() const { return _triedCnt; }
+    byte* frameSerializedBin() { return _frameSerializedBin; }
+    int frameSerializedLen() { return _frameSerializedLen; }
 };
 
 class UDPResendObjComp4MinHeap {
@@ -41,31 +46,39 @@ class UDPResendQueue {
 private:
     SafePriorityQueue<UDPResendObj*, std::vector<UDPResendObj*>, UDPResendObjComp4MinHeap> _queue;
 
-    static pthread_mutex_t _mutex;
-    static UDPResendQueue* _instance;
+//    static pthread_mutex_t _mutex;
+//    static UDPResendQueue* _instance;
 
-    UDPResendQueue();
+
 public:
-    static UDPResendQueue* instance();
+    UDPResendQueue();
+//    static UDPResendQueue* instance();
 
-    UDPResendObj* top() { return _queue.size() == 0 ? NULL : _queue.top(); }
+    UDPResendObj* pop() {
+        if (_queue.size() == 0) {
+            return NULL;
+        }
+
+        UDPResendObj* obj = _queue.top();
+        _queue.pop();
+
+        return obj;
+    }
+
 
     void push(UDPResendObj* obj) { _queue.push(obj); }
-
-    void pop() { _queue.pop(); }
-
 };
 
 class UDPSendQueue {
 private:
     SafeQueue<UDPResendObj*>* _queue;
 
-    static pthread_mutex_t _mutex;
-    static UDPSendQueue* _instance;
+//    static pthread_mutex_t _mutex;
+//    static UDPSendQueue* _instance;
 
-    UDPSendQueue();
 public:
-    static UDPSendQueue* instance();
+    UDPSendQueue();
+//    static UDPSendQueue* instance();
 
     void push(UDPResendObj* obj) { _queue->push(obj); }
 
@@ -78,13 +91,14 @@ private:
     // packetId + frameIndex, acked
     SafeMap<std::string, bool> _map;
 
-    static pthread_mutex_t _mutex;
-    static UDPAckMap* _instance;
+//    static pthread_mutex_t _mutex;
+//    static UDPAckMap* _instance;
 
-    UDPAckMap();
+
 
 public:
-    static UDPAckMap* instance();
+    UDPAckMap();
+//    static UDPAckMap* instance();
 
     bool needResend(int packetId, byte frameIndex);
     void erase(int packetId, byte frameIndex);

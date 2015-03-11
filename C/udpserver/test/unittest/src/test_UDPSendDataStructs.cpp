@@ -95,45 +95,45 @@ TEST(UDPResendQueue, test_UDPResendQueue) {
     UDPFrame* frame2 = UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, contentLen, content2);
     UDPResendObj* obj2 = new UDPResendObj(ip, port, frame2);
 
-    UDPResendQueue::instance()->push(obj1);
-    UDPResendQueue::instance()->push(obj2);
+    UDPResendQueue* _resendQueue = new UDPResendQueue();
+    _resendQueue->push(obj1);
+    _resendQueue->push(obj2);
 
-    UDPResendObj* obj = UDPResendQueue::instance()->top();
+    UDPResendObj* obj = _resendQueue->pop();
     ASSERT_EQ(obj->frame()->frameIndex(), obj1->frame()->frameIndex());
 
-    UDPResendQueue::instance()->pop();
     obj->update();
-    UDPResendQueue::instance()->push(obj);
+    _resendQueue->push(obj);
 
-    obj = UDPResendQueue::instance()->top();
+    obj = _resendQueue->pop();
     ASSERT_EQ(obj->frame()->frameIndex(), obj2->frame()->frameIndex());
-    UDPResendQueue::instance()->pop();
 
     obj->update();
-    UDPResendQueue::instance()->push(obj);
-    obj = UDPResendQueue::instance()->top();
+    _resendQueue->push(obj);
+    obj = _resendQueue->pop();
     ASSERT_EQ(obj->frame()->frameIndex(), obj1->frame()->frameIndex());
 }
 
 TEST(UDPAckMap, test_UDPAckMap) {
-    ASSERT_EQ(0, UDPAckMap::instance()->size());
+    UDPAckMap* _ackMap = new UDPAckMap();
+    ASSERT_EQ(0, _ackMap->size());
 
     int packetId = 1234;
     byte frameIndex = 1;
 
-    UDPAckMap::instance()->setNotAcked(packetId, frameIndex);
-    ASSERT_TRUE(UDPAckMap::instance()->needResend(packetId, frameIndex));
-    ASSERT_EQ(1, UDPAckMap::instance()->size());
+    _ackMap->setNotAcked(packetId, frameIndex);
+    ASSERT_TRUE(_ackMap->needResend(packetId, frameIndex));
+    ASSERT_EQ(1, _ackMap->size());
 
-    UDPAckMap::instance()->setAckedIfExist(packetId, frameIndex);
-    ASSERT_FALSE(UDPAckMap::instance()->needResend(packetId, frameIndex));
-    ASSERT_EQ(1, UDPAckMap::instance()->size());
+    _ackMap->setAckedIfExist(packetId, frameIndex);
+    ASSERT_FALSE(_ackMap->needResend(packetId, frameIndex));
+    ASSERT_EQ(1, _ackMap->size());
 
-    UDPAckMap::instance()->erase(packetId, frameIndex);
-    ASSERT_FALSE(UDPAckMap::instance()->needResend(packetId, frameIndex));
-    ASSERT_EQ(0, UDPAckMap::instance()->size());
+    _ackMap->erase(packetId, frameIndex);
+    ASSERT_FALSE(_ackMap->needResend(packetId, frameIndex));
+    ASSERT_EQ(0, _ackMap->size());
 
-    UDPAckMap::instance()->erase(packetId, frameIndex);
-    ASSERT_FALSE(UDPAckMap::instance()->needResend(packetId, frameIndex));
-    ASSERT_EQ(0, UDPAckMap::instance()->size());
+    _ackMap->erase(packetId, frameIndex);
+    ASSERT_FALSE(_ackMap->needResend(packetId, frameIndex));
+    ASSERT_EQ(0, _ackMap->size());
 }

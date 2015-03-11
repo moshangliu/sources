@@ -47,7 +47,7 @@ private:
 public:
     UDPRecvObjMeta(std::string ip, int port, int packetId)
         : _ip(ip), _port(port), _packetId(packetId){
-        _expireTsUs = current_us() + UDPRetryTimeSpan::instance()->allWaitTimeUs() * 2;
+        _expireTsUs = current_us() + UDPRetryTimeSpan::instance()->allWaitTimeUs();
     }
 
     std::string ip() { return _ip; }
@@ -72,14 +72,15 @@ private:
     std::map<std::string, UDPRecvObj*> _udpRecvObjs;
     std::priority_queue<UDPRecvObjMeta*> _udpRecvMetas;
 
-    static pthread_mutex_t _mutex4instance;
-    static UDPRecvContainer* _instance;
+//    static pthread_mutex_t _mutex4instance;
+//    static UDPRecvContainer* _instance;
 
     pthread_mutex_t _mutex4container;
-    UDPRecvContainer();
+
 
 public:
-    static UDPRecvContainer* instance();
+    UDPRecvContainer();
+//    static UDPRecvContainer* instance();
 
     /**
      * @return: <completed, content, contentLen>
@@ -87,6 +88,8 @@ public:
     std::tuple<bool, byte*, int> putOrAssemble(std::string ip, int port, UDPFrame* frame);
 
     int expireOrReturnSleepUs();
+
+    void print(std::string s);
 };
 
 

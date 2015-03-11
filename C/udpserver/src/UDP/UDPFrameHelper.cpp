@@ -1,5 +1,6 @@
 #include<cstring>
 
+#include "LoggerWrapper.h"
 #include "UDPFrameHelper.h"
 #include "UDPPacketIdCreator.h"
 
@@ -106,6 +107,7 @@ vector<UDPFrame*>* UDPFrameHelper::segment(const byte* data, int len) {
     for (int i = 0; i < frameCount; i++) {
         int frameContentLen = i == frameCount - 1 ? len - idx : UDP_FRAME_MAX_SIZE;
         byte* frameContent = new byte[frameContentLen];
+        memset(frameContent, 0, frameContentLen);
         memcpy(frameContent, data + idx, frameContentLen);
         idx += frameContentLen;
 
@@ -114,6 +116,10 @@ vector<UDPFrame*>* UDPFrameHelper::segment(const byte* data, int len) {
 
         UDPFrame* frame = UDPFrame::buildPacket(version, packetId, frameCount, frameIndex, frameContentLen, frameContent);
         frames->push_back(frame);
+
+//        LoggerWrapper::instance()->debug("FrameSegment, frameContentLen:%d, idx:%d/%d, allLen:%d",
+//            frameContentLen, frameIndex, frameCount, len);
+
     }
 
     return frames;

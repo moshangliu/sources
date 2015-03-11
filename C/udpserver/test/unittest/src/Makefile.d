@@ -1,4 +1,5 @@
-CPPFLAGS+=-g -O3 -std=c++11 -Wall -pipe -D_REENTRANT
+CPPFLAGS+=-gdwarf-2 -g -std=c++11 -Wall -pipe -D_REENTRANT 
+#CPPFLAGS+=-g -O3 -std=c++11 -Wall -pipe -D_REENTRANT
 
 INCLUDEDIR=../../../include/
 SRCDIR = src

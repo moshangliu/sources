@@ -203,13 +203,18 @@ string makeRecvPacketKey(const string& ip, int port, int packetId) {
 
 string format(const char* format, ...) {
     const int LOG_MAX_LEN = 1024;
-    char buf[LOG_MAX_LEN];
+    char* buf = new char[LOG_MAX_LEN];
+    memset(buf, 0, LOG_MAX_LEN);
+
     va_list args;
     va_start(args, format);
     vsnprintf(buf, LOG_MAX_LEN, format, args);
     va_end(args);
 
-    return string(buf);
+    string ret = string(buf);
+    delete [] buf;
+
+    return ret;
 }
 
 bool same(const byte* data1, const byte* data2, int32 len) {

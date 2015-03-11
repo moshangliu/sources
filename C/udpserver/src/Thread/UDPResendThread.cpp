@@ -10,30 +10,35 @@
 
 using namespace std;
 
-UDPResendThread::UDPResendThread(int listenFd) : _listenfd(listenFd) {}
+UDPResendThread::UDPResendThread(int listenFd, UDPResendQueue* resendQueue, UDPAckMap* ackMap)
+    : _listenfd(listenFd), _resendQueue(resendQueue), _ackMap(ackMap), _stopFlag(false) {}
 
 void* UDPResendThread::process() {
     const int DEFAULT_SLEEP_US = 10;
     LoggerWrapper::instance()->info("UDPResendThread started");
 
-    while (true) {
-
-        UDPResendObj* obj = UDPResendQueue::instance()->top();
+    while (!_stopFlag) {
+        UDPResendObj* obj = _resendQueue->pop();
         if (obj == NULL) {
             usleep(DEFAULT_SLEEP_US);
             continue;
         }
 
+        string ip = obj->ip();
+        int port = obj->port();
         int packetId = obj->frame()->packetId();
         byte frameIndex = obj->frame()->frameIndex();
+        byte frameCount = obj->frame()->frameCount();
 
         /**
          * If acked or reach max try count, remove data
          */
-        if (!UDPAckMap::instance()->needResend(packetId, frameIndex)
+        if (!_ackMap->needResend(packetId, frameIndex)
             || obj->triedCnt() == UDPRetryTimeSpan::instance()->maxTryCnt()) {
-            UDPAckMap::instance()->erase(packetId, frameIndex);
-            UDPResendQueue::instance()->pop();
+//            LoggerWrapper::instance()->warn("UDPTrace, SEND_FRAME_WARN, %s:%d, PACKET_ID:%d, %d/%d, TriedCnt:%d/%d",
+//                ip.c_str(), port, packetId, frameIndex, frameCount, obj->triedCnt(), UDPRetryTimeSpan::instance()->maxTryCnt());
+
+            _ackMap->erase(packetId, frameIndex);
             delete obj;
 
             continue;
@@ -42,8 +47,6 @@ void* UDPResendThread::process() {
         long currentUs = current_us();
         long runTsUs = obj->sendTsUs();
         if (currentUs >= runTsUs) {
-            string ip = obj->ip();
-            int port = obj->port();
 
             // Set remote IP / PORT
             sockaddr_in addr;
@@ -55,17 +58,22 @@ void* UDPResendThread::process() {
             addr.sin_port = htons(port);
 
             // Send data
-            sendto(_listenfd, obj->frame()->content(), obj->frame()->contentLength(),
+            sendto(_listenfd, obj->frameSerializedBin(), obj->frameSerializedLen(),
                 0,
                 (struct sockaddr*)&addr, addrLen);
 
             obj->update();
-            UDPResendQueue::instance()->push(obj);
+            _resendQueue->push(obj);
+
+            LoggerWrapper::instance()->debug("UDPTrace, SEND_FRAME, %s:%d, PACKET_ID:%d, %d/%d, TriedCnt:%d/%d",
+                ip.c_str(), port, packetId, frameIndex, frameCount, obj->triedCnt(), UDPRetryTimeSpan::instance()->maxTryCnt());
 
             continue;
         }
 
         usleep(runTsUs - currentUs);
     }
+
+    LoggerWrapper::instance()->info("UDPResendThread stopped");
     return NULL;
 }

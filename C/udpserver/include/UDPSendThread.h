@@ -10,6 +10,7 @@
 
 #include "Common.h"
 #include "Thread.h"
+#include "UDPSendDataStructs.h"
 
 class ClientConn;
 
@@ -17,13 +18,22 @@ class UDPSendThread : public Thread
 {
     public:
 
-        UDPSendThread(int listenFd);
+        UDPSendThread(int listenFd, UDPSendQueue* sendQueue,
+            UDPResendQueue* resendQueue, UDPAckMap* ackMap);
 
         virtual void* process();
+        void stop() {
+            _stopFlag = true;
+        }
 
     private:
         int _listenfd;
 
+        UDPSendQueue* _sendQueue;
+        UDPResendQueue* _resendQueue;
+        UDPAckMap* _ackMap;
+
+        bool _stopFlag;
 };
 
 

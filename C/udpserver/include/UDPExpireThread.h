@@ -4,12 +4,19 @@
 
 #include "Common.h"
 #include "Thread.h"
+#include "UDPRecvDataStructs.h"
 
 class UDPExpireThread : public Thread
 {
     public:
-        UDPExpireThread();
+        UDPExpireThread(UDPRecvContainer* recvContainer);
         virtual void* process();
+
+        void stop();
+
+    private:
+        UDPRecvContainer* _recvContainer;
+        bool stopFlag;
 };
 
 

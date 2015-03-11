@@ -19,7 +19,9 @@ using namespace std;
 
 typedef struct sockaddr sockaddr_t;
 
-UDPRecvThread::UDPRecvThread(uint32 port) : _port(port) {
+UDPRecvThread::UDPRecvThread(uint32 port, UDPPacketDispatcher* dispatcher,
+    UDPAckMap* ackMap, UDPRecvContainer* recvContainer)
+    : _port(port), _dispatcher(dispatcher), _ackMap(ackMap), _recvContainer(recvContainer), _stopFlag(false) {
     _listenfd = 0;
     if ((_listenfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         cerr << "Failed to create listen socket." << endl;
@@ -46,54 +48,65 @@ void UDPRecvThread::Bind(int listenfd) {
 }
 
 void UDPRecvThread::accept(int listenfd) {
-    while (true) {
+//    _recvContainer->print("UDPRecvThread-51");
+    while (!_stopFlag) {
         const int BUF_LEN = 2048; // UDP_FRAME_MAX_SIZE;
-        byte buf[2048]{0};
+        byte* buf = new byte[BUF_LEN];
+        memset(buf, 0, BUF_LEN);
 
         struct sockaddr_in clientAddr;
         socklen_t addrLen = sizeof(clientAddr);
         int n = recvfrom(listenfd, buf, BUF_LEN, 0, (struct sockaddr*)&clientAddr, &addrLen);
         if (n <= 0) {
             LoggerWrapper::instance()->warn("UDPTrace, RECV, Failed");
+            delete [] buf;
             continue;
         }
 
         UDPFrame* frame = UDPFrameHelper::unserialize(buf, n);
         if (frame == NULL) {
-            LoggerWrapper::instance()->warn("UDPTrace, RECV, INVALID_FRAME");
-           continue;
+            LoggerWrapper::instance()->warn("UDPTrace, RECV, INVALID_FRAME, contentLen:%d", n);
+            delete [] buf;
+            continue;
         }
 
         const int packetId = frame->packetId();
         const byte frameCount = frame->frameCount();
         const byte frameIndex = frame->frameIndex();
+
+        string ip = string(inet_ntoa(clientAddr.sin_addr));
+        short port = ntohs(clientAddr.sin_port);
         if (frame->packetType() == UDPPacketType::Ack) {
-            LoggerWrapper::instance()->debug("UDPTrace, RECV_ACK, PacketId:%d, %d/%d",
-                packetId, frameIndex, frameCount);
-            UDPAckMap::instance()->setAckedIfExist(frame->packetId(), frame->frameIndex());
+            LoggerWrapper::instance()->debug("UDPTrace, RECV_ACK, PacketId:%d, %d/%d, From:%s-%d",
+                packetId, frameIndex, frameCount, ip.c_str(), port);
+            _ackMap->setAckedIfExist(frame->packetId(), frame->frameIndex());
             delete frame;
+            delete [] buf;
 
             continue;
         }
         if (frame->packetType() == UDPPacketType::Packet) {
-            LoggerWrapper::instance()->debug("UDPTrace, RECV_FRAME, PacketId:%d, %d/%d, ContentLen:%d",
-                packetId, frameIndex, frameCount, frame->contentLength());
+            LoggerWrapper::instance()->debug("UDPTrace, RECV_FRAME, PacketId:%d, %d/%d, ContentLen:%d, From:%s-%d",
+                packetId, frameIndex, frameCount, frame->contentLength(), ip.c_str(), port);
 
             sendAck(frame, &clientAddr);
-            LoggerWrapper::instance()->debug("UDPTrace, SEND_ACK, PacketId:%d, %d/%d",
-                packetId, frameIndex, frameCount);
+            LoggerWrapper::instance()->debug("UDPTrace, SEND_ACK, PacketId:%d, %d/%d, To:%s-%d",
+                packetId, frameIndex, frameCount, ip.c_str(), port);
 
-            string ip = string(inet_ntoa(clientAddr.sin_addr));
-            short port = ntohs(clientAddr.sin_port);
-            tuple<bool, byte*, int> ret = UDPRecvContainer::instance()->putOrAssemble(ip, port, frame);
+//            _recvContainer->print("UDPRecvThread-96");
+
+            tuple<bool, byte*, int> ret = _recvContainer->putOrAssemble(ip, port, frame);
             if (!get<0>(ret)) {
+                delete [] buf;
                 continue;
             }
 
             byte* content = get<1>(ret);
             int contentLen = get<2>(ret);
+            _dispatcher->dispatch(ip, port, content, contentLen);
 
             LoggerWrapper::instance()->debug("UDPTrace, RECV_PACKET_COMPLETE, PacketId:%d, ContentLen:%d", packetId, contentLen);
+            delete [] buf;
             delete [] content;
         }
     }
@@ -126,5 +139,6 @@ void* UDPRecvThread::process() {
     Bind(_listenfd);
     accept(_listenfd);
 
+    LoggerWrapper::instance()->info("UDPRecvThread stopped");
     return NULL;
 }

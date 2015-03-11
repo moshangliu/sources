@@ -1,0 +1,116 @@
+#include "Common.h"
+#include "UDPFrame.h"
+#include "UDPFrameHelper.h"
+#include "UDPTranceiver.h"
+#include "LoggerWrapper.h"
+#include "UDPPacketReceivedHandler.h"
+#include "UDPRetryTimeSpan.h"
+
+#include <tuple>
+#include <vector>
+#include <gtest/gtest.h>
+#include <unistd.h>
+
+int main(int argc, char **argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+
+const byte TEST_TYPE = 0;
+class UDPTranceiverTestHandler : public UDPPacketReceivedHandler {
+private:
+    // IP, PORT, CONTENT, CONTENT_LEN
+    vector<tuple<string, int, byte*, int>> _contents;
+
+public:
+    virtual void handle(std::string ip, int port, byte* content, int contentLen) {
+        LoggerWrapper::instance()->info("UT, RecvFrom:%s-%d, contentLen:%d",
+            ip.c_str(), port, contentLen);
+
+        _contents.push_back(make_tuple(ip, port, content, contentLen));
+    }
+
+    ~UDPTranceiverTestHandler() {}
+
+    vector<tuple<string, int, byte*, int>>& contents() {
+        return _contents;
+    }
+};
+
+void testSendSelf(char* content, int contentLen);
+static int16 selfPort = 10000;
+
+TEST(UDPTranceiver, test_UDPTranceiver_1_frame) {
+
+    int contentLen = UDP_FRAME_MAX_SIZE - 1;
+    char* content = new char[contentLen];
+    for (int32 i = 0; i < contentLen; i++) {
+        content[i] = (char)rand();
+    }
+
+    testSendSelf(content, contentLen);
+}
+
+TEST(UDPTranceiver, test_UDPTranceiver_2_frame) {
+
+    int contentLen = 2*UDP_FRAME_MAX_SIZE - 1;
+    char* content = new char[contentLen];
+    for (int32 i = 0; i < contentLen; i++) {
+        content[i] = (char)rand();
+    }
+
+    testSendSelf(content, contentLen);
+}
+
+TEST(UDPTranceiver, test_UDPTranceiver_4_frame) {
+
+    int contentLen = 4*UDP_FRAME_MAX_SIZE - 1;
+    char* content = new char[contentLen];
+    for (int32 i = 0; i < contentLen; i++) {
+        content[i] = (char)rand();
+    }
+
+    testSendSelf(content, contentLen);
+}
+
+TEST(UDPTranceiver, test_UDPTranceiver_max_frame) {
+
+    int contentLen = UDP_FRAME_MAX_COUNT*UDP_FRAME_MAX_SIZE - 1;
+    char* content = new char[contentLen];
+    for (int32 i = 0; i < contentLen; i++) {
+        content[i] = (char)rand();
+    }
+
+    testSendSelf(content, contentLen);
+}
+
+void testSendSelf(char* content, int contentLen) {
+    string host = "127.0.0.1";
+    selfPort++;
+
+    UDPTranceiver tranceiver(selfPort);
+    UDPTranceiverTestHandler* handler = new UDPTranceiverTestHandler();
+    tranceiver.registerHandler(TEST_TYPE, handler);
+
+    tranceiver.run();
+
+    tranceiver.send(TEST_TYPE, host, selfPort, content, contentLen);
+    sleep(3);
+
+    vector<tuple<string, int, byte*, int>>& contents = handler->contents();
+    ASSERT_EQ(1, contents.size());
+
+    tuple<string, int, byte*, int> result = contents[0];
+    ASSERT_EQ(host, get<0>(result));
+    ASSERT_EQ(selfPort, get<1>(result));
+    ASSERT_EQ(contentLen, get<3>(result));
+    ASSERT_TRUE(same((byte*)content, get<2>(result), contentLen));
+
+    tranceiver.stop();
+
+    int waitThreadStopSec = UDPRetryTimeSpan::instance()->allWaitTimeUs() / 1000 / 1000 + 1;
+    sleep(waitThreadStopSec);
+
+    delete[] content;
+}

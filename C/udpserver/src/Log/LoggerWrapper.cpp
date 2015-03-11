@@ -15,7 +15,8 @@ LoggerWrapper* LoggerWrapper::_instance = NULL;
 pthread_mutex_t LoggerWrapper::_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 LoggerWrapper::LoggerWrapper() {
-    std::auto_ptr<Layout> layout = std::auto_ptr<Layout>(new PatternLayout("%d{%Y-%m-%d %H:%M:%S} %p - %m [%l/pid:%t]%n"));
+//    std::auto_ptr<Layout> layout = std::auto_ptr<Layout>(new PatternLayout("%d{%Y-%m-%d %H:%M:%S} %p - %m [%l/pid:%t]%n"));
+    std::auto_ptr<Layout> layout = std::auto_ptr<Layout>(new PatternLayout("%d{%Y-%m-%d %H:%M:%S} %p - %m [pid:%t]%n"));
 
     SharedAppenderPtr appender(new ConsoleAppender());
     appender->setName("myAppenderName");
@@ -23,7 +24,7 @@ LoggerWrapper::LoggerWrapper() {
 
     _logger = Logger::getInstance("UDPTranceiver");
     _logger.addAppender(appender);
-    _logger.setLogLevel (DEBUG_LOG_LEVEL);
+    _logger.setLogLevel(ALL_LOG_LEVEL);
 }
 
 LoggerWrapper* LoggerWrapper::instance() {
@@ -102,5 +103,5 @@ void LoggerWrapper::error(const char* format, ...) {
     vsnprintf(buf, LOG_MAX_LEN, format, args);
     va_end(args);
 
-    LOG4CPLUS_WARN(_logger, buf);
+    LOG4CPLUS_ERROR(_logger, buf);
 }

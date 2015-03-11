@@ -8,13 +8,15 @@
 
 using namespace std;
 
-UDPSendThread::UDPSendThread(int listenFd) : _listenfd(listenFd) {}
+UDPSendThread::UDPSendThread(int listenFd, UDPSendQueue* sendQueue,
+    UDPResendQueue* resendQueue, UDPAckMap* ackMap)
+    : _listenfd(listenFd), _sendQueue(sendQueue), _resendQueue(resendQueue), _ackMap(ackMap), _stopFlag(false) {}
 
 void* UDPSendThread::process() {
     LoggerWrapper::instance()->info("UDPSendThread started");
 
-    while (true) {
-        UDPResendObj* obj = UDPSendQueue::instance()->pop();
+    while (!_stopFlag) {
+        UDPResendObj* obj = _sendQueue->pop();
         string ip = obj->ip();
         int port = obj->port();
         int packetId = obj->frame()->packetId();
@@ -33,16 +35,18 @@ void* UDPSendThread::process() {
         // Init state
         obj->update();
 
-        UDPAckMap::instance()->setNotAcked(packetId, frameIndex);
-        UDPResendQueue::instance()->push(obj);
+        _ackMap->setNotAcked(packetId, frameIndex);
+        _resendQueue->push(obj);
 
         // Send data
-        sendto(_listenfd, obj->frame()->content(), obj->frame()->contentLength(),
+        sendto(_listenfd, obj->frameSerializedBin(), obj->frameSerializedLen(),
             0,
             (struct sockaddr*)&addr, addrLen);
 
-        LoggerWrapper::instance()->debug("UDPTrace, SEND_PACKET, %s:%d, PACKET_ID:%d, %d/%d",
-            ip.c_str(), port, packetId, frameIndex, frameCount);
+        LoggerWrapper::instance()->debug("UDPTrace, SEND_FRAME, %s:%d, PACKET_ID:%d, %d/%d, TriedCnt:%d",
+            ip.c_str(), port, packetId, frameIndex, frameCount, obj->triedCnt());
     }
+
+    LoggerWrapper::instance()->info("UDPSendThread stopped");
     return NULL;
 }
