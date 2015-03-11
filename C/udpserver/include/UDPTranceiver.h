@@ -12,6 +12,8 @@
 #include "UDPSendThread.h"
 #include "UDPResendThread.h"
 
+#include <signal.h>
+
 class UDPTranceiver {
 private:
     int _port;
@@ -48,6 +50,10 @@ public:
     }
 
     void stop() {
+//        pthread_kill(_udpRecvThread->threadId(), SIGKILL);
+//        pthread_kill(_udpSendThread->threadId(), SIGKILL);
+//        pthread_kill(_udpResendThread->threadId(), SIGKILL);
+//        pthread_kill(_udpExpireThread->threadId(), SIGKILL);
         _udpRecvThread->stop();
         _udpSendThread->stop();
         _udpResendThread->stop();
