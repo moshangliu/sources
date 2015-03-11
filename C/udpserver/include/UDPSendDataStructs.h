@@ -3,10 +3,11 @@
 
 #include <vector>
 #include <string>
+#include <queue>
 #include "UDPFrame.h"
-#include "SafePriorityQueue.h"
 #include "SafeQueue.h"
 #include "SafeMap.h"
+#include "MutexLock.h"
 
 class UDPResendObj {
 private:
@@ -44,17 +45,16 @@ public:
 
 class UDPResendQueue {
 private:
-    SafePriorityQueue<UDPResendObj*, std::vector<UDPResendObj*>, UDPResendObjComp4MinHeap> _queue;
-
-//    static pthread_mutex_t _mutex;
-//    static UDPResendQueue* _instance;
-
-
+    std::priority_queue<UDPResendObj*, std::vector<UDPResendObj*>, UDPResendObjComp4MinHeap> _queue;
+    pthread_mutex_t _mutex;
 public:
-    UDPResendQueue();
-//    static UDPResendQueue* instance();
+    UDPResendQueue() {
+        _mutex = PTHREAD_MUTEX_INITIALIZER;
+    }
 
     UDPResendObj* pop() {
+        MutexLock lock(&_mutex);
+
         if (_queue.size() == 0) {
             return NULL;
         }
@@ -66,19 +66,18 @@ public:
     }
 
 
-    void push(UDPResendObj* obj) { _queue.push(obj); }
+    void push(UDPResendObj* obj) {
+        MutexLock lock(&_mutex);
+        _queue.push(obj);
+    }
 };
 
 class UDPSendQueue {
 private:
     SafeQueue<UDPResendObj*>* _queue;
 
-//    static pthread_mutex_t _mutex;
-//    static UDPSendQueue* _instance;
-
 public:
     UDPSendQueue();
-//    static UDPSendQueue* instance();
 
     void push(UDPResendObj* obj) { _queue->push(obj); }
 

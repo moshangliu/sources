@@ -72,15 +72,11 @@ private:
     std::map<std::string, UDPRecvObj*> _udpRecvObjs;
     std::priority_queue<UDPRecvObjMeta*> _udpRecvMetas;
 
-//    static pthread_mutex_t _mutex4instance;
-//    static UDPRecvContainer* _instance;
-
     pthread_mutex_t _mutex4container;
 
 
 public:
     UDPRecvContainer();
-//    static UDPRecvContainer* instance();
 
     /**
      * @return: <completed, content, contentLen>

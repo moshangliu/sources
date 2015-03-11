@@ -28,8 +28,6 @@ UDPSendQueue::UDPSendQueue() {
     _queue = new SafeQueue<UDPResendObj*>(1024*1024*1024);
 }
 
-UDPResendQueue::UDPResendQueue() {}
-
 UDPAckMap::UDPAckMap() {}
 
 void UDPAckMap::setNotAcked(int packetId, byte frameIndex) {
