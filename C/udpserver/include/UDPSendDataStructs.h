@@ -9,7 +9,6 @@
 
 #include "UDPFrame.h"
 #include "SafeQueue.h"
-#include "SafeMap.h"
 #include "MutexLock.h"
 
 class UDPResendObj {

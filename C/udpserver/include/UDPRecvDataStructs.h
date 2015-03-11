@@ -4,13 +4,12 @@
 #include <string>
 #include <map>
 #include <tuple>
+#include <queue>
 
 #include <pthread.h>
 
 #include "Common.h"
 #include "UDPFrame.h"
-#include "SafeMap.h"
-#include "SafePriorityQueue.h"
 #include "UDPRetryTimeSpan.h"
 
 class UDPRecvObj {

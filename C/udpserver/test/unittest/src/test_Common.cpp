@@ -4,6 +4,9 @@
 #include <arpa/inet.h>
 #include<fcntl.h>
 #include <sys/stat.h>
+#include <set>
+#include <map>
+#include <queue>
 
 #include <gtest/gtest.h>
 
@@ -113,4 +116,34 @@ TEST(ip2in_addr, test_ip2in_addr) {
 
     ASSERT_EQ(ip, newIP);
 
+}
+
+TEST(set, test_set) {
+    byte b = 12;
+    set<byte> data;
+
+    data.insert(b);
+    ASSERT_EQ(1, data.size());
+
+    data.erase(b);
+    ASSERT_EQ(0, data.size());
+
+    data.erase(b);
+    ASSERT_EQ(0, data.size());
+
+}
+
+TEST(map, test_set) {
+    int key = 12;
+    string value = "value";
+    map<int, string> data;
+
+    data[key] = value;
+    ASSERT_EQ(1, data.size());
+
+    data.erase(key);
+    ASSERT_EQ(0, data.size());
+
+    data.erase(key);
+    ASSERT_EQ(0, data.size());
 }
