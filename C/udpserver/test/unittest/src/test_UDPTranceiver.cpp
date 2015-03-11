@@ -6,10 +6,14 @@
 #include "UDPPacketReceivedHandler.h"
 #include "UDPRetryTimeSpan.h"
 
+#include "boost/shared_array.hpp"
 #include <tuple>
 #include <vector>
 #include <gtest/gtest.h>
 #include <unistd.h>
+
+using namespace std;
+using namespace boost;
 
 int main(int argc, char **argv)
 {
@@ -44,45 +48,45 @@ static int16 selfPort = 10000;
 TEST(UDPTranceiver, test_UDPTranceiver_self_1_frame) {
 
     int contentLen = UDP_FRAME_MAX_SIZE - 1;
-    char* content = new char[contentLen];
+    shared_array<char> content (new char[contentLen]);
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = (char)rand();
+        content.get()[i] = (char)rand();
     }
 
-    testSendSelf(content, contentLen);
+    testSendSelf(content.get(), contentLen);
 }
 
 TEST(UDPTranceiver, test_UDPTranceiver_self_2_frame) {
 
     int contentLen = 2*UDP_FRAME_MAX_SIZE - 1;
-    char* content = new char[contentLen];
+    shared_array<char> content (new char[contentLen]);
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = (char)rand();
+        content.get()[i] = (char)rand();
     }
 
-    testSendSelf(content, contentLen);
+    testSendSelf(content.get(), contentLen);
 }
 
 TEST(UDPTranceiver, test_UDPTranceiver_self_4_frame) {
 
     int contentLen = 4*UDP_FRAME_MAX_SIZE - 1;
-    char* content = new char[contentLen];
+    shared_array<char> content (new char[contentLen]);
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = (char)rand();
+        content.get()[i] = (char)rand();
     }
 
-    testSendSelf(content, contentLen);
+    testSendSelf(content.get(), contentLen);
 }
 
 TEST(UDPTranceiver, test_UDPTranceiver_self_max_frame) {
 
     int contentLen = UDP_FRAME_MAX_COUNT*UDP_FRAME_MAX_SIZE - 1;
-    char* content = new char[contentLen];
+    shared_array<char> content (new char[contentLen]);
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = (char)rand();
+        content.get()[i] = (char)rand();
     }
 
-    testSendSelf(content, contentLen);
+    testSendSelf(content.get(), contentLen);
 }
 
 
@@ -93,45 +97,45 @@ void testSendOther(char* content, int contentLen);
 TEST(UDPTranceiver, test_UDPTranceiver_other_1_frame) {
 
     int contentLen = UDP_FRAME_MAX_SIZE - 1;
-    char* content = new char[contentLen];
+    shared_array<char> content (new char[contentLen]);
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = (char)rand();
+        content.get()[i] = (char)rand();
     }
 
-    testSendOther(content, contentLen);
+    testSendOther(content.get(), contentLen);
 }
 
 TEST(UDPTranceiver, test_UDPTranceiver_other_2_frame) {
 
     int contentLen = 2*UDP_FRAME_MAX_SIZE - 1;
-    char* content = new char[contentLen];
+    shared_array<char> content (new char[contentLen]);
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = (char)rand();
+        content.get()[i] = (char)rand();
     }
 
-    testSendOther(content, contentLen);
+    testSendOther(content.get(), contentLen);
 }
 
 TEST(UDPTranceiver, test_UDPTranceiver_other_4_frame) {
 
     int contentLen = 4*UDP_FRAME_MAX_SIZE - 1;
-    char* content = new char[contentLen];
+    shared_array<char> content (new char[contentLen]);
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = (char)rand();
+        content.get()[i] = (char)rand();
     }
 
-    testSendOther(content, contentLen);
+    testSendOther(content.get(), contentLen);
 }
 
 TEST(UDPTranceiver, test_UDPTranceiver_other_max_frame) {
 
     int contentLen = UDP_FRAME_MAX_COUNT*UDP_FRAME_MAX_SIZE - 1;
-    char* content = new char[contentLen];
+    shared_array<char> content (new char[contentLen]);
     for (int32 i = 0; i < contentLen; i++) {
-        content[i] = (char)rand();
+        content.get()[i] = (char)rand();
     }
 
-    testSendOther(content, contentLen);
+    testSendOther(content.get(), contentLen);
 }
 
 void testSendSelf(char* content, int contentLen) {
@@ -161,8 +165,6 @@ void testSendSelf(char* content, int contentLen) {
     int waitThreadStopSec = UDPRetryTimeSpan::instance()->allWaitTimeUs() / 1000 / 1000 + 1;
     sleep(waitThreadStopSec);
     sleep(1);
-
-    delete[] content;
 }
 
 void testSendOther(char* content, int contentLen) {
@@ -198,6 +200,4 @@ void testSendOther(char* content, int contentLen) {
     sleep(waitThreadStopSec);
 
     sleep(1);
-
-    delete[] content;
 }

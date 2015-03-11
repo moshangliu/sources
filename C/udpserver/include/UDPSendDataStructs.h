@@ -90,14 +90,8 @@ private:
     // packetId + frameIndex, acked
     SafeMap<std::string, bool> _map;
 
-//    static pthread_mutex_t _mutex;
-//    static UDPAckMap* _instance;
-
-
-
 public:
     UDPAckMap();
-//    static UDPAckMap* instance();
 
     bool needResend(int packetId, byte frameIndex);
     void erase(int packetId, byte frameIndex);
