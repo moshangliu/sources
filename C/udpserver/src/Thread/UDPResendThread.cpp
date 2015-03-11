@@ -10,8 +10,11 @@
 
 using namespace std;
 
-UDPResendThread::UDPResendThread(int listenFd, UDPResendQueue* resendQueue, UDPAckMap* ackMap)
-    : _listenfd(listenFd), _resendQueue(resendQueue), _ackMap(ackMap), _stopFlag(false) {}
+UDPResendThread::UDPResendThread(int listenFd, UDPResendQueue* resendQueue,
+    UDPAckMap* ackMap, UDPPacketMap* packetMap,
+    UDPPacketSendFailureHandler* failureHandler)
+    : _listenfd(listenFd), _resendQueue(resendQueue), _ackMap(ackMap),
+      _packetMap(packetMap), _failureHandler(failureHandler), _stopFlag(false) {}
 
 void* UDPResendThread::process() {
     const int DEFAULT_SLEEP_US = 10;
@@ -33,14 +36,35 @@ void* UDPResendThread::process() {
         /**
          * If acked or reach max try count, remove data
          */
-        if (!_ackMap->needResend(packetId, frameIndex)
-            || obj->triedCnt() == UDPRetryTimeSpan::instance()->maxTryCnt()) {
-//            LoggerWrapper::instance()->warn("UDPTrace, SEND_FRAME_WARN, %s:%d, PACKET_ID:%d, %d/%d, TriedCnt:%d/%d",
-//                ip.c_str(), port, packetId, frameIndex, frameCount, obj->triedCnt(), UDPRetryTimeSpan::instance()->maxTryCnt());
-
+        if (!_ackMap->needResend(packetId, frameIndex)) {
             _ackMap->erase(packetId, frameIndex);
             delete obj;
 
+            continue;
+        }
+
+        /**
+         * This frame has reached max retry count
+         */
+        if (obj->triedCnt() == UDPRetryTimeSpan::instance()->maxTryCnt()) {
+            _ackMap->erase(packetId, frameIndex);
+            UDPPacketObj* packetObj = _packetMap->existAndPop(packetId);
+            if (packetObj != NULL) {
+                if (_failureHandler != NULL) {
+                    _failureHandler->handle(packetObj->ip(), packetObj->port(), packetObj->type(),
+                        packetObj->rawData(), packetObj->rawDataLen());
+                }
+                LoggerWrapper::instance()->warn("UDPTrace, SEND_PACKET_FAIL, %s:%d, "
+                    "packetId:%d, contentLen:%d", ip.c_str(), port,
+                    packetId, packetObj->rawDataLen());
+
+                delete packetObj;
+            }
+
+            LoggerWrapper::instance()->warn("UDPTrace, SEND_FRAME_FAIL, %s:%d, "
+                "packetId:%d, %d/%d", ip.c_str(), port,
+                packetId, frameIndex, frameCount);
+            delete obj;
             continue;
         }
 

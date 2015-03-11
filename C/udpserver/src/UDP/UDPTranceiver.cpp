@@ -26,13 +26,18 @@ UDPTranceiver::UDPTranceiver(int port) : _port(port) {
     _resendQueue = new UDPResendQueue();
     _ackMap = new UDPAckMap();
     _recvContainer = new UDPRecvContainer();
+    _packetMap = new UDPPacketMap();
+    _successHandler = NULL;
+    _failureHandler = NULL;
 
-    _udpRecvThread = new UDPRecvThread(port, _dispatcher, _ackMap, _recvContainer);
+    _udpRecvThread = new UDPRecvThread(port, _dispatcher, _ackMap, _recvContainer, _packetMap, _successHandler);
     int listenFd = ((UDPRecvThread*)_udpRecvThread)->listenFd();
 
     _udpSendThread = new UDPSendThread(listenFd, _sendQueue, _resendQueue, _ackMap);
-    _udpResendThread = new UDPResendThread(listenFd, _resendQueue, _ackMap);
+    _udpResendThread = new UDPResendThread(listenFd, _resendQueue, _ackMap, _packetMap, _failureHandler);
     _udpExpireThread = new UDPExpireThread(_recvContainer);
+
+
 }
 
 UDPTranceiver::~UDPTranceiver() {
@@ -45,6 +50,7 @@ UDPTranceiver::~UDPTranceiver() {
     delete _resendQueue;
     delete _ackMap;
     delete _recvContainer;
+    delete _packetMap;
 }
 
 void UDPTranceiver::logger(log4cplus::Logger logger) {
@@ -72,11 +78,26 @@ void UDPTranceiver::send(byte type, std::string ip, int port, char* data, int da
         return;
     }
 
+    // type + raw
     shared_array<char> dataNew(new char[dataLen + 1]);
     dataNew.get()[0] = type;
     memcpy(dataNew.get() + 1, data, dataLen);
 
+    // segment
     boost::shared_ptr<vector<UDPFrame*>> frames(UDPFrameHelper::segment((byte*)dataNew.get(), dataLen + 1));
+
+    // init packetObj
+    int packetId = frames.get()->at(0)->packetId();
+    set<byte> frameIndexesNotAcked;
+    for (vector<UDPFrame*>::iterator it = frames.get()->begin(); it != frames.get()->end(); it++) {
+        frameIndexesNotAcked.insert((*it)->frameIndex());
+    }
+
+    byte* rawDataCopy = new byte[dataLen];
+    memcpy(rawDataCopy, data, dataLen);
+    _packetMap->put(packetId, new UDPPacketObj(ip, (int16)port, type, frameIndexesNotAcked, rawDataCopy, dataLen));
+
+    // add into send queue for UDPFrame
     for (vector<UDPFrame*>::iterator it = frames.get()->begin(); it != frames.get()->end(); it++) {
         _sendQueue->push(new UDPResendObj(ip, port, *it));
     }

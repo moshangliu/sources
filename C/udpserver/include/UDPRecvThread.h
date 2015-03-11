@@ -7,12 +7,14 @@
 #include "UDPPacketDispatcher.h"
 #include "UDPSendDataStructs.h"
 #include "UDPRecvDataStructs.h"
+#include "UDPPacketSendSuccessHandler.h"
 
 class UDPRecvThread : public Thread
 {
     public:
         UDPRecvThread(uint32 port, UDPPacketDispatcher* dispatcher,
-            UDPAckMap* ackMap, UDPRecvContainer* recvContainer);
+            UDPAckMap* ackMap, UDPRecvContainer* recvContainer,
+            UDPPacketMap* packetMap, UDPPacketSendSuccessHandler* successHandler);
 
         /**
          * @brief create server sockaddr
@@ -29,6 +31,10 @@ class UDPRecvThread : public Thread
             _stopFlag = true;
         }
 
+        void setSuccessHandler(UDPPacketSendSuccessHandler* successHandler) {
+            _successHandler = successHandler;
+        }
+
     private:
 
         uint32 _port;
@@ -40,6 +46,10 @@ class UDPRecvThread : public Thread
         UDPAckMap* _ackMap;
 
         UDPRecvContainer* _recvContainer;
+
+        UDPPacketMap* _packetMap;
+
+        UDPPacketSendSuccessHandler* _successHandler;
 
         bool _stopFlag;
 

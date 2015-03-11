@@ -6,12 +6,14 @@
 #include "UDPPacketDispatcher.h"
 #include "UDPSendDataStructs.h"
 #include "UDPRecvDataStructs.h"
-#include "log4cplus/logger.h"
 #include "UDPRecvThread.h"
 #include "UDPExpireThread.h"
 #include "UDPSendThread.h"
 #include "UDPResendThread.h"
+#include "UDPPacketSendFailureHandler.h"
+#include "UDPPacketSendSuccessHandler.h"
 
+#include "log4cplus/logger.h"
 #include <signal.h>
 
 class UDPTranceiver {
@@ -28,6 +30,10 @@ private:
     UDPResendQueue* _resendQueue;
     UDPAckMap* _ackMap;
     UDPRecvContainer* _recvContainer;
+    UDPPacketMap* _packetMap;
+
+    UDPPacketSendSuccessHandler* _successHandler;
+    UDPPacketSendFailureHandler* _failureHandler;
 public:
     UDPTranceiver(int port);
     ~UDPTranceiver();
@@ -42,18 +48,26 @@ public:
     void registerHandler(byte type, UDPPacketReceivedHandler* handler) {
         _dispatcher->registerHandler(type, handler);
     }
+
     void unregisterHandler(byte type) {
         _dispatcher->unregisterHandler(type);
     }
+
     void setDefaultHandler(UDPPacketReceivedHandler* handler) {
         _dispatcher->setDefaultHandler(handler);
     }
 
+    void setSuccessHandler(UDPPacketSendSuccessHandler* successHandler) {
+        _successHandler = successHandler;
+        _udpRecvThread->setSuccessHandler(successHandler);
+    }
+
+    void setFailureHandler(UDPPacketSendFailureHandler* failureHandler) {
+        _failureHandler = failureHandler;
+        _udpResendThread->setFailureHandler(failureHandler);
+    }
+
     void stop() {
-//        pthread_kill(_udpRecvThread->threadId(), SIGKILL);
-//        pthread_kill(_udpSendThread->threadId(), SIGKILL);
-//        pthread_kill(_udpResendThread->threadId(), SIGKILL);
-//        pthread_kill(_udpExpireThread->threadId(), SIGKILL);
         _udpRecvThread->stop();
         _udpSendThread->stop();
         _udpResendThread->stop();

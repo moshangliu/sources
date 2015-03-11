@@ -28,31 +28,34 @@ UDPSendQueue::UDPSendQueue() {
     _queue = new SafeQueue<UDPResendObj*>(1024*1024*1024);
 }
 
-UDPAckMap::UDPAckMap() {}
-
 void UDPAckMap::setNotAcked(int packetId, byte frameIndex) {
+    MutexLock lock(&_mutex);
+
     string key = makeKey(packetId, frameIndex);
-    _map.put(key, false);
+    _map[key] = false;
 }
 
 void UDPAckMap::setAckedIfExist(int packetId, byte frameIndex) {
+    MutexLock lock(&_mutex);
+
     string key = makeKey(packetId, frameIndex);
-    if (_map.has(key)) {
-        _map.put(key, true);
+    if (_map.find(key) != _map.end()) {
+        _map[key] = true;
     }
 }
 
 bool UDPAckMap::needResend(int packetId, byte frameIndex) {
+    MutexLock lock(&_mutex);
+
     string key = makeKey(packetId, frameIndex);
-
-    return _map.has(key) && !_map.get(key); // Not acked
-
+    return _map.find(key) != _map.end() && !_map[key]; // Not acked
 }
 
 void UDPAckMap::erase(int packetId, byte frameIndex) {
+    MutexLock lock(&_mutex);
+
     string key = makeKey(packetId, frameIndex);
     _map.erase(key);
-
 }
 
 size_t UDPAckMap::size() {

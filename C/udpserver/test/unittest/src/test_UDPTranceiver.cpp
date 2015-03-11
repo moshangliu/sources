@@ -28,7 +28,7 @@ private:
     vector<tuple<string, int, byte*, int>> _contents;
 
 public:
-    virtual void handle(std::string ip, int port, byte* content, int contentLen) {
+    virtual void handle(string ip, int port, byte* content, int contentLen) {
         LoggerWrapper::instance()->info("UT, RecvFrom:%s-%d, contentLen:%d",
             ip.c_str(), port, contentLen);
 
@@ -38,6 +38,44 @@ public:
     ~UDPTranceiverTestHandler() {}
 
     vector<tuple<string, int, byte*, int>>& contents() {
+        return _contents;
+    }
+};
+
+class UDPSendSuccessHandler4Test : public UDPPacketSendSuccessHandler {
+private:
+    // IP, PORT, TYPE, CONTENT, CONTENT_LEN
+    vector<tuple<string, int, byte, byte*, int>> _contents;
+
+public:
+    virtual void handle(string ip, int port, byte type, byte* content, int contentLen) {
+        LoggerWrapper::instance()->info("UT, SEND_PACKET_SUCCESS, To:%s-%d, contentLen:%d",
+            ip.c_str(), port, contentLen);
+        _contents.push_back(make_tuple(ip, port, type, content, contentLen));
+    }
+
+    ~UDPSendSuccessHandler4Test() {}
+
+    vector<tuple<string, int, byte, byte*, int>>& contents() {
+        return _contents;
+    }
+};
+
+class UDPSendFailureHandler4Test : public UDPPacketSendFailureHandler {
+private:
+    // IP, PORT, TYPE, CONTENT, CONTENT_LEN
+    vector<tuple<string, int, byte, byte*, int>> _contents;
+
+public:
+    virtual void handle(string ip, int port, byte type, byte* content, int contentLen) {
+        LoggerWrapper::instance()->info("UT, SEND_PACKET_FAILURE, To:%s-%d, contentLen:%d",
+            ip.c_str(), port, contentLen);
+        _contents.push_back(make_tuple(ip, port, type, content, contentLen));
+    }
+
+    ~UDPSendFailureHandler4Test() {}
+
+    vector<tuple<string, int, byte, byte*, int>>& contents() {
         return _contents;
     }
 };
@@ -142,15 +180,21 @@ void testSendSelf(char* content, int contentLen) {
     string host = "127.0.0.1";
     selfPort++;
 
-    UDPTranceiver* tranceiver = new UDPTranceiver(selfPort);
     UDPTranceiverTestHandler* handler = new UDPTranceiverTestHandler();
+    UDPSendSuccessHandler4Test* successHandler = new UDPSendSuccessHandler4Test();
+    UDPSendFailureHandler4Test* failureHandler = new UDPSendFailureHandler4Test();
+
+    UDPTranceiver* tranceiver = new UDPTranceiver(selfPort);
     tranceiver->registerHandler(TEST_TYPE, handler);
+    tranceiver->setSuccessHandler(successHandler);
+    tranceiver->setFailureHandler(failureHandler);
 
     tranceiver->run();
 
     tranceiver->send(TEST_TYPE, host, selfPort, content, contentLen);
     sleep(2);
 
+    // Check recvHandler
     vector<tuple<string, int, byte*, int>>& contents = handler->contents();
     ASSERT_EQ(1, contents.size());
 
@@ -159,6 +203,21 @@ void testSendSelf(char* content, int contentLen) {
     ASSERT_EQ(selfPort, get<1>(result));
     ASSERT_EQ(contentLen, get<3>(result));
     ASSERT_TRUE(same((byte*)content, get<2>(result), contentLen));
+
+//    // Check successHandler
+//    vector<tuple<string, int, byte, byte*, int>>& successContents = successHandler->contents();
+//    ASSERT_EQ(1, successContents.size());
+//
+//    tuple<string, int, byte, byte*, int> successResult = successContents[0];
+//    ASSERT_EQ(host, get<0>(result));
+//    ASSERT_EQ(selfPort, get<1>(result));
+//    ASSERT_EQ(TEST_TYPE, get<2>(result));
+//    ASSERT_EQ(contentLen, get<4>(result));
+//    ASSERT_TRUE(same((byte*)content, get<3>(result), contentLen));
+//
+//    // Check failureHandler
+//    vector<tuple<string, int, byte, byte*, int>>& failureContents = failureHandler->contents();
+//    ASSERT_EQ(0, failureContents.size());
 
     tranceiver->stop();
 

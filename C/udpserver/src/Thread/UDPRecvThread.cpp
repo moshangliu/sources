@@ -22,8 +22,12 @@ using namespace boost;
 typedef struct sockaddr sockaddr_t;
 
 UDPRecvThread::UDPRecvThread(uint32 port, UDPPacketDispatcher* dispatcher,
-    UDPAckMap* ackMap, UDPRecvContainer* recvContainer)
-    : _port(port), _dispatcher(dispatcher), _ackMap(ackMap), _recvContainer(recvContainer), _stopFlag(false) {
+    UDPAckMap* ackMap, UDPRecvContainer* recvContainer, UDPPacketMap* packetMap,
+    UDPPacketSendSuccessHandler* successHandler)
+    : _port(port), _dispatcher(dispatcher), _ackMap(ackMap),
+      _recvContainer(recvContainer),_packetMap(packetMap),
+      _successHandler(successHandler),
+      _stopFlag(false) {
     _listenfd = 0;
     if ((_listenfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         cerr << "Failed to create listen socket." << endl;
@@ -77,11 +81,22 @@ void UDPRecvThread::accept(int listenfd) {
         string ip = string(inet_ntoa(clientAddr.sin_addr));
         short port = ntohs(clientAddr.sin_port);
         if (frame->packetType() == UDPPacketType::Ack) {
+            _ackMap->setAckedIfExist(frame->packetId(), frame->frameIndex());
+            UDPPacketObj* packetObj = _packetMap->ackAndIfSuccessThenEraseAndReturn(packetId, frameIndex);
+            if (packetObj != NULL) {
+                if (_successHandler != NULL) {
+                    _successHandler->handle(packetObj->ip(), packetObj->port(), packetObj->type(),
+                        packetObj->rawData(), packetObj->rawDataLen());
+                }
+                LoggerWrapper::instance()->debug("UDPTrace, SEND_PACKET_SUCCESS, PacketId:%d, TO:%s-%d",
+                    packetId, ip.c_str(), port);
+                delete packetObj;
+            }
+
             LoggerWrapper::instance()->debug("UDPTrace, RECV_ACK, PacketId:%d, %d/%d, From:%s-%d",
                 packetId, frameIndex, frameCount, ip.c_str(), port);
-            _ackMap->setAckedIfExist(frame->packetId(), frame->frameIndex());
-            delete frame;
 
+            delete frame;
             continue;
         }
         if (frame->packetType() == UDPPacketType::Packet) {
