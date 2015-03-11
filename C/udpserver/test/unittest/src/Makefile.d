@@ -9,7 +9,7 @@ INCLUDES=-I../../../include/ \
 	-I/opt/soft/tcpsvr/log4cplus/include \
 	-I/opt/soft/tcpsvr/boost/include
 
-DEP_LIBS = ../../../output/lib/libserver.a \
+DEP_LIBS = ../../../output/lib/libudptranceiver.a \
 	 /opt/soft/tcpsvr/gcc-4.8.1/lib64/libstdc++.a \
 	 /opt/soft/tcpsvr/log4cplus/lib/liblog4cplus.a \
 	../../gtest/lib/libgtest.a \

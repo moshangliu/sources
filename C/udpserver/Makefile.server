@@ -3,6 +3,6 @@ include ../Makefile.d
 server: *.o
 	$(CC) -o $@ *.o $(CPPFLAGS) $(INCLUDE_DIRS) $(LIBS_DIR)
 	@cp -r ../include/* ./include
-	ar -rs ./lib/lib$@.a *.o
+	ar -rs ./lib/libudptranceiver.a *.o
 	rm *.o
 	rm Makefile.server
