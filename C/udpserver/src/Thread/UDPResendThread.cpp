@@ -48,7 +48,7 @@ void* UDPResendThread::process() {
          */
         if (obj->triedCnt() == UDPRetryTimeSpan::instance()->maxTryCnt()) {
             _ackMap->erase(packetId, frameIndex);
-            UDPPacketObj* packetObj = _packetMap->existAndPop(packetId);
+            UDPPacketObj* packetObj = _packetMap->ifExistThenPop(packetId);
             if (packetObj != NULL) {
                 if (_failureHandler != NULL) {
                     _failureHandler->handle(packetObj->ip(), packetObj->port(), packetObj->type(),

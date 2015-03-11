@@ -82,7 +82,7 @@ void UDPRecvThread::accept(int listenfd) {
         short port = ntohs(clientAddr.sin_port);
         if (frame->packetType() == UDPPacketType::Ack) {
             _ackMap->setAckedIfExist(frame->packetId(), frame->frameIndex());
-            UDPPacketObj* packetObj = _packetMap->ackAndIfSuccessThenEraseAndReturn(packetId, frameIndex);
+            UDPPacketObj* packetObj = _packetMap->ackAndIfSuccessThenPop(packetId, frameIndex);
             if (packetObj != NULL) {
                 if (_successHandler != NULL) {
                     _successHandler->handle(packetObj->ip(), packetObj->port(), packetObj->type(),

@@ -175,7 +175,7 @@ public:
         _map[packetId] = obj;
     }
 
-    UDPPacketObj* ackAndIfSuccessThenEraseAndReturn(int packetId, byte frameIndex) {
+    UDPPacketObj* ackAndIfSuccessThenPop(int packetId, byte frameIndex) {
         MutexLock lock(&_mutex);
 
         std::map<int, UDPPacketObj*>::iterator it = _map.find(packetId);
@@ -193,7 +193,7 @@ public:
         return NULL;
     }
 
-    UDPPacketObj* existAndPop(int packetId) {
+    UDPPacketObj* ifExistThenPop(int packetId) {
         MutexLock lock(&_mutex);
 
         std::map<int, UDPPacketObj*>::iterator it = _map.find(packetId);
