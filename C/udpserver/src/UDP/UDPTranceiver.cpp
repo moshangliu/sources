@@ -7,6 +7,8 @@
 #include "LoggerWrapper.h"
 #include "UDPFrameHelper.h"
 #include "UDPSendDataStructs.h"
+#include "boost/shared_array.hpp"
+#include "boost/shared_ptr.hpp"
 
 #include <cstring>
 #include <string>
@@ -15,6 +17,7 @@
 #include "log4cplus/loggingmacros.h"
 
 using namespace std;
+using namespace boost;
 using namespace log4cplus;
 
 UDPTranceiver::UDPTranceiver(int port) : _port(port) {
@@ -24,7 +27,6 @@ UDPTranceiver::UDPTranceiver(int port) : _port(port) {
     _ackMap = new UDPAckMap();
     _recvContainer = new UDPRecvContainer();
 
-//    _recvContainer->print("UDPTranceiver-27");
     _udpRecvThread = new UDPRecvThread(port, _dispatcher, _ackMap, _recvContainer);
     int listenFd = ((UDPRecvThread*)_udpRecvThread)->listenFd();
 
@@ -55,8 +57,6 @@ void UDPTranceiver::run() {
     _udpSendThread->run();
     _udpResendThread->run();
     _udpExpireThread->run();
-
-//    _recvContainer->print("UDPTranceiver-run");
 }
 
 void UDPTranceiver::join() {
@@ -72,15 +72,12 @@ void UDPTranceiver::send(byte type, std::string ip, int port, char* data, int da
         return;
     }
 
-    char* dataNew = new char[dataLen + 1];
-    dataNew[0] = type;
-    memcpy(dataNew + 1, data, dataLen);
+    shared_array<char> dataNew(new char[dataLen + 1]);
+    dataNew.get()[0] = type;
+    memcpy(dataNew.get() + 1, data, dataLen);
 
-    vector<UDPFrame*>* frames = UDPFrameHelper::segment((byte*)dataNew, dataLen + 1);
-    for (vector<UDPFrame*>::iterator it = frames->begin(); it != frames->end(); it++) {
+    boost::shared_ptr<vector<UDPFrame*>> frames(UDPFrameHelper::segment((byte*)dataNew.get(), dataLen + 1));
+    for (vector<UDPFrame*>::iterator it = frames.get()->begin(); it != frames.get()->end(); it++) {
         _sendQueue->push(new UDPResendObj(ip, port, *it));
     }
-
-    delete frames;
-    delete [] dataNew;
 }

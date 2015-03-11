@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include <errno.h>
 
+#include "boost/smart_ptr.hpp"
 #include "LoggerWrapper.h"
 #include "UDPRecvDataStructs.h"
 #include "UDPSendDataStructs.h"
@@ -16,6 +17,7 @@
 #include "UDPRecvThread.h"
 
 using namespace std;
+using namespace boost;
 
 typedef struct sockaddr sockaddr_t;
 
@@ -48,25 +50,23 @@ void UDPRecvThread::Bind(int listenfd) {
 }
 
 void UDPRecvThread::accept(int listenfd) {
-//    _recvContainer->print("UDPRecvThread-51");
     while (!_stopFlag) {
         const int BUF_LEN = 2048; // UDP_FRAME_MAX_SIZE;
-        byte* buf = new byte[BUF_LEN];
-        memset(buf, 0, BUF_LEN);
+
+        shared_array<byte> buf(new byte[BUF_LEN]);
+        memset(buf.get(), 0, BUF_LEN);
 
         struct sockaddr_in clientAddr;
         socklen_t addrLen = sizeof(clientAddr);
-        int n = recvfrom(listenfd, buf, BUF_LEN, 0, (struct sockaddr*)&clientAddr, &addrLen);
+        int n = recvfrom(listenfd, buf.get(), BUF_LEN, 0, (struct sockaddr*)&clientAddr, &addrLen);
         if (n <= 0) {
             LoggerWrapper::instance()->warn("UDPTrace, RECV, Failed");
-            delete [] buf;
             continue;
         }
 
-        UDPFrame* frame = UDPFrameHelper::unserialize(buf, n);
+        UDPFrame* frame = UDPFrameHelper::unserialize(buf.get(), n);
         if (frame == NULL) {
             LoggerWrapper::instance()->warn("UDPTrace, RECV, INVALID_FRAME, contentLen:%d", n);
-            delete [] buf;
             continue;
         }
 
@@ -81,7 +81,6 @@ void UDPRecvThread::accept(int listenfd) {
                 packetId, frameIndex, frameCount, ip.c_str(), port);
             _ackMap->setAckedIfExist(frame->packetId(), frame->frameIndex());
             delete frame;
-            delete [] buf;
 
             continue;
         }
@@ -93,21 +92,17 @@ void UDPRecvThread::accept(int listenfd) {
             LoggerWrapper::instance()->debug("UDPTrace, SEND_ACK, PacketId:%d, %d/%d, To:%s-%d",
                 packetId, frameIndex, frameCount, ip.c_str(), port);
 
-//            _recvContainer->print("UDPRecvThread-96");
-
             tuple<bool, byte*, int> ret = _recvContainer->putOrAssemble(ip, port, frame);
             if (!get<0>(ret)) {
-                delete [] buf;
                 continue;
             }
 
-            byte* content = get<1>(ret);
+            shared_array<byte> content(get<1>(ret));
             int contentLen = get<2>(ret);
-            _dispatcher->dispatch(ip, port, content, contentLen);
+
+            _dispatcher->dispatch(ip, port, content.get(), contentLen);
 
             LoggerWrapper::instance()->debug("UDPTrace, RECV_PACKET_COMPLETE, PacketId:%d, ContentLen:%d", packetId, contentLen);
-            delete [] buf;
-            delete [] content;
         }
     }
 }
@@ -117,16 +112,14 @@ void UDPRecvThread::sendAck(UDPFrame* frame, struct sockaddr_in* clientAddr) {
         return;
     }
 
-    UDPFrame* ack = frame->buildAck();
-    tuple<byte*, int> ackTuple = UDPFrameHelper::serialize(ack);
-    byte* ackBin = get<0>(ackTuple);
+    boost::shared_ptr<UDPFrame> ack(frame->buildAck());
+    tuple<byte*, int> ackTuple = UDPFrameHelper::serialize(ack.get());
+    shared_array<byte> ackBin(get<0>(ackTuple));
     int ackBinLen = get<1>(ackTuple);
 
-    sendto(_listenfd, ackBin, ackBinLen,
+    sendto(_listenfd, ackBin.get(), ackBinLen,
         0,
         (struct sockaddr*)clientAddr, sizeof(sockaddr_in));
-    delete ack;
-    delete [] ackBin;
 }
 
 void* UDPRecvThread::process() {
