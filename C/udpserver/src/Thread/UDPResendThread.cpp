@@ -23,6 +23,7 @@ void* UDPResendThread::process() {
     while (!_stopFlag) {
         UDPResendObj* obj = _resendQueue->pop();
         if (obj == NULL) {
+//            LoggerWrapper::instance()->debug("UDPResendThread usleep: %d us", DEFAULT_SLEEP_US);
             usleep(DEFAULT_SLEEP_US);
             continue;
         }
@@ -37,6 +38,7 @@ void* UDPResendThread::process() {
          * If acked or reach max try count, remove data
          */
         if (!_ackMap->needResend(packetId, frameIndex)) {
+//            LoggerWrapper::instance()->debug("UDPResendThread dont need resend");
             _ackMap->erase(packetId, frameIndex);
             delete obj;
 
@@ -95,6 +97,7 @@ void* UDPResendThread::process() {
             continue;
         }
 
+        _resendQueue->push(obj);
         usleep(runTsUs - currentUs);
     }
 

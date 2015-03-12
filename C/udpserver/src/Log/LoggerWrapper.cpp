@@ -15,7 +15,6 @@ LoggerWrapper* LoggerWrapper::_instance = NULL;
 pthread_mutex_t LoggerWrapper::_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 LoggerWrapper::LoggerWrapper() {
-//    std::auto_ptr<Layout> layout = std::auto_ptr<Layout>(new PatternLayout("%d{%Y-%m-%d %H:%M:%S} %p - %m [%l/pid:%t]%n"));
     std::auto_ptr<Layout> layout = std::auto_ptr<Layout>(new PatternLayout("%d{%Y-%m-%d %H:%M:%S} %p - %m [pid:%t]%n"));
 
     SharedAppenderPtr appender(new ConsoleAppender());
