@@ -1,0 +1,2 @@
+include ../../Makefile.d
+all: ConfManager.o

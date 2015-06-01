@@ -1,0 +1,2 @@
+include ../../Makefile.d
+server: Common.o
